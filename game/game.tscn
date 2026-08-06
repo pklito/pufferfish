@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://wmqllq3qg2ls"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_apyxu"]
+size = Vector2(880, 90)
+
+[node name="Game" type="Node2D" unique_id=235328191]
+
+[node name="RigidBody2D2" type="RigidBody2D" parent="." unique_id=1940826117]
+position = Vector2(374, 246)
+
+[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=1105308893]
+position = Vector2(525, 276)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=647953769]
+position = Vector2(586, 553)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1685142109]
+position = Vector2(-115, 38)
+shape = SubResource("RectangleShape2D_apyxu")
