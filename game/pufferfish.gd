@@ -2,13 +2,15 @@ extends Node
 
 @export var amount : int = 20
 @export var targetCore : Node2D
+@export var visualPolygon : Polygon2D
+@export var visualRim : Line2D
+
 var sbnode : PackedScene = preload("res://game/SoftBodyNode.tscn")
 # Called when the node enters the scene tree for the first time.
 
 var listPoints := []
 var listJoints := []
 var listRestingDists := []
-
 
 func _ready() -> void:
 	for a in targetCore.get_children():
@@ -22,8 +24,8 @@ func _ready() -> void:
 			a.scale = Vector2(0.2,0.2)
 	
 	for i in range(listPoints.size()):
-		for j in range(i, listPoints.size()):
-			var joint = createJoint(listPoints[i],listPoints[j], 240, 0.3)
+		for j in range(i+1, listPoints.size()):
+			var joint = createJoint(listPoints[i],listPoints[j], 100, 0.3)
 			add_child(joint)
 			listJoints.append(joint)
 			listRestingDists.append(joint.rest_length)
@@ -44,8 +46,26 @@ func createJoint(a : Node2D, b:Node2D, stiffness = 340.0, damping = 0.2) -> Damp
 	joint.rest_length = joint.length
 	return joint
 
+var scaleTween : Tween
 func _input(event: InputEvent) -> void:
 	if (event is InputEventMouseButton):
-		for i in range(listJoints.size()):
-			var joint = listJoints[i]
-			joint.rest_length = listRestingDists[i] * (0.2 if event.pressed else 1.0) 
+		if(scaleTween != null):
+			scaleTween.stop()
+		scaleTween = get_tree().create_tween()
+		if (event.pressed):
+			scaleTween.tween_method(setScale, 1.0, 0.4, 0.15).set_trans(Tween.TRANS_LINEAR)
+		else:
+			scaleTween.tween_method(setScale, 0.4, 1.0, 0.05).set_trans(Tween.TRANS_LINEAR)
+		scaleTween.play()
+
+func setScale(scale : float):
+	for i in range(listJoints.size()):
+		var joint = listJoints[i]
+		joint.rest_length = listRestingDists[i] * scale
+
+func _process(delta: float) -> void:
+	var points = []
+	for a in listPoints:
+		points.append(a.global_position)
+	visualPolygon.polygon = points
+	visualRim.points = points

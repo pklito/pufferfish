@@ -21,22 +21,24 @@ shape = SubResource("RectangleShape2D_apyxu")
 [node name="MeshInstance2D" type="MeshInstance2D" parent="StaticBody2D" unique_id=123783829]
 mesh = SubResource("QuadMesh_apyxu")
 
-[node name="Pufferfish" type="Node" parent="." unique_id=614738856 node_paths=PackedStringArray("targetCore")]
+[node name="Pufferfish" type="Node" parent="." unique_id=614738856 node_paths=PackedStringArray("targetCore", "visualPolygon", "visualRim")]
 script = ExtResource("2_h7iqs")
 targetCore = NodePath("RigidBody2D")
+visualPolygon = NodePath("Polygon2D")
+visualRim = NodePath("Line2D")
 
 [node name="RigidBody2D" type="Node2D" parent="Pufferfish" unique_id=1053514779]
 position = Vector2(397, 185)
 metadata/_edit_group_ = true
 
 [node name="Line2D" type="Line2D" parent="Pufferfish" unique_id=1079842755]
-points = PackedVector2Array(319, 85, 187, 202, 123, 228, -5, 78, 205, -43)
 closed = true
-width = 41.435
+width = 22.75
+default_color = Color(0.5208457, 0.4351544, 0.890625, 1)
 texture_mode = 1
 joint_mode = 2
 
 [node name="Polygon2D" type="Polygon2D" parent="Pufferfish" unique_id=1332535546]
-position = Vector2(584, 21)
+color = Color(0.5948784, 0.6591754, 1, 1)
 polygon = PackedVector2Array(253, -27, 293, 17, 297, 76, 237, 144, 118, 174, 59, 141, 34, 97, 35, 25, 69, -17, 159, -45)
 uv = PackedVector2Array(-5, -3, 485, 8, 394, 227, -138, 269, -170, 32, -70, -68)
