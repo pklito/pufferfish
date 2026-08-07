@@ -1,7 +1,5 @@
 [gd_scene format=3 uid="uid://c5yb77l6qu3kh"]
 
-[ext_resource type="Script" uid="uid://unwhnooi7g2c" path="res://addons/godot-rapier2d/custom_nodes/rapier_rigid_body_2d.gd" id="1_4jnk7"]
-
 [sub_resource type="SphereMesh" id="SphereMesh_dqbel"]
 radius = 50.0
 height = 100.0
@@ -12,10 +10,11 @@ rings = 12
 radius = 50.0
 
 [node name="RigidBody2D" type="RigidBody2D" unique_id=2053328822]
-script = ExtResource("1_4jnk7")
+collision_layer = 2
 metadata/_custom_type_script = "uid://unwhnooi7g2c"
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=295426970]
+visible = false
 mesh = SubResource("SphereMesh_dqbel")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1918045878]

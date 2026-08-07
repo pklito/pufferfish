@@ -6,6 +6,9 @@ var sbnode : PackedScene = preload("res://game/SoftBodyNode.tscn")
 # Called when the node enters the scene tree for the first time.
 
 var listPoints := []
+var listJoints := []
+var listRestingDists := []
+
 
 func _ready() -> void:
 	for a in targetCore.get_children():
@@ -14,19 +17,22 @@ func _ready() -> void:
 		var child : RigidBody2D = sbnode.instantiate()
 		add_child(child)
 		listPoints.append(child)
-		child.global_position = targetCore.global_position + Vector2(0,50).rotated(6.28 * i / amount)
+		child.global_position = targetCore.global_position + Vector2(0,40).rotated(6.28 * i / amount)
 		for a in child.get_children():
-			a.scale = Vector2(0.1,0.1)
+			a.scale = Vector2(0.2,0.2)
 	
 	for i in range(listPoints.size()):
 		for j in range(i, listPoints.size()):
-			add_child(createJoint(listPoints[i],listPoints[j]))
+			var joint = createJoint(listPoints[i],listPoints[j])
+			add_child(joint)
+			listJoints.append(joint)
+			listRestingDists.append(joint.rest_length)
 	
 	
 	
 
-func createJoint(a : Node2D, b:Node2D, stiffness = 64.0, damping = 10.0) -> DampedSpringJoint2D:
-	var joint = RapierDampedSpringJoint2D.new()
+func createJoint(a : Node2D, b:Node2D, stiffness = 340.0, damping = 0.2) -> DampedSpringJoint2D:
+	var joint = DampedSpringJoint2D.new()
 	joint.global_position = a.global_position
 	var delta = b.global_position - a.global_position
 	joint.length = delta.length()
@@ -37,3 +43,9 @@ func createJoint(a : Node2D, b:Node2D, stiffness = 64.0, damping = 10.0) -> Damp
 	joint.damping = damping
 	joint.rest_length = joint.length
 	return joint
+
+func _input(event: InputEvent) -> void:
+	if (event is InputEventMouseButton):
+		for i in range(listJoints.size()):
+			var joint = listJoints[i]
+			joint.rest_length = listRestingDists[i] * (0.5 if event.pressed else 1.0) 

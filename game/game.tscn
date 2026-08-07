@@ -12,6 +12,7 @@ size = Vector2(880, 90)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=647953769]
 position = Vector2(498, 579)
+collision_mask = 3
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1685142109]
@@ -22,6 +23,7 @@ mesh = SubResource("QuadMesh_apyxu")
 
 [node name="Pufferfish" type="Node" parent="." unique_id=614738856 node_paths=PackedStringArray("targetCore")]
 script = ExtResource("2_h7iqs")
+amount = null
 targetCore = NodePath("RigidBody2D")
 
 [node name="RigidBody2D" type="Node2D" parent="Pufferfish" unique_id=1053514779]
