@@ -23,7 +23,7 @@ func _ready() -> void:
 	
 	for i in range(listPoints.size()):
 		for j in range(i, listPoints.size()):
-			var joint = createJoint(listPoints[i],listPoints[j])
+			var joint = createJoint(listPoints[i],listPoints[j], 240, 0.3)
 			add_child(joint)
 			listJoints.append(joint)
 			listRestingDists.append(joint.rest_length)
@@ -48,4 +48,4 @@ func _input(event: InputEvent) -> void:
 	if (event is InputEventMouseButton):
 		for i in range(listJoints.size()):
 			var joint = listJoints[i]
-			joint.rest_length = listRestingDists[i] * (0.5 if event.pressed else 1.0) 
+			joint.rest_length = listRestingDists[i] * (0.2 if event.pressed else 1.0) 
