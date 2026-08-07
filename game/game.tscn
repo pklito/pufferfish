@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://wmqllq3qg2ls"]
 
-[ext_resource type="PackedScene" uid="uid://c5yb77l6qu3kh" path="res://game/SoftBodyNode.tscn" id="1_vasa2"]
 [ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://game/pufferfish.gd" id="2_h7iqs"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_apyxu"]
@@ -8,6 +7,15 @@ size = Vector2(880, 90)
 
 [sub_resource type="QuadMesh" id="QuadMesh_apyxu"]
 size = Vector2(880, 90)
+
+[sub_resource type="SphereMesh" id="SphereMesh_dqbel"]
+radius = 50.0
+height = 100.0
+radial_segments = 16
+rings = 12
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_apyxu"]
+radius = 50.0
 
 [node name="Game" type="Node" unique_id=434314932]
 
@@ -25,5 +33,11 @@ mesh = SubResource("QuadMesh_apyxu")
 script = ExtResource("2_h7iqs")
 targetCore = NodePath("RigidBody2D")
 
-[node name="RigidBody2D" parent="Pufferfish" unique_id=23452499 instance=ExtResource("1_vasa2")]
+[node name="RigidBody2D" type="StaticBody2D" parent="Pufferfish" unique_id=849581343]
 position = Vector2(489, 279)
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="Pufferfish/RigidBody2D" unique_id=295426970]
+mesh = SubResource("SphereMesh_dqbel")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pufferfish/RigidBody2D" unique_id=1918045878]
+shape = SubResource("CircleShape2D_apyxu")
