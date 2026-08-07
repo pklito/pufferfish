@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://wmqllq3qg2ls"]
 
 [ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://game/pufferfish.gd" id="2_h7iqs"]
+[ext_resource type="Script" uid="uid://busd3yfk5p1mx" path="res://addons/godot-rapier2d/custom_nodes/rapier_static_body_2d.gd" id="2_vasa2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_apyxu"]
 size = Vector2(880, 90)
@@ -33,8 +34,10 @@ mesh = SubResource("QuadMesh_apyxu")
 script = ExtResource("2_h7iqs")
 targetCore = NodePath("RigidBody2D")
 
-[node name="RigidBody2D" type="StaticBody2D" parent="Pufferfish" unique_id=849581343]
+[node name="RigidBody2D" type="StaticBody2D" parent="Pufferfish" unique_id=1094396913]
 position = Vector2(489, 279)
+script = ExtResource("2_vasa2")
+metadata/_custom_type_script = "uid://busd3yfk5p1mx"
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="Pufferfish/RigidBody2D" unique_id=295426970]
 mesh = SubResource("SphereMesh_dqbel")
