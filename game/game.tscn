@@ -1,19 +1,29 @@
 [gd_scene format=3 uid="uid://wmqllq3qg2ls"]
 
+[ext_resource type="PackedScene" uid="uid://c5yb77l6qu3kh" path="res://game/SoftBodyNode.tscn" id="1_vasa2"]
+[ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://game/pufferfish.gd" id="2_h7iqs"]
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_apyxu"]
 size = Vector2(880, 90)
 
-[node name="Game" type="Node2D" unique_id=235328191]
+[sub_resource type="QuadMesh" id="QuadMesh_apyxu"]
+size = Vector2(880, 90)
 
-[node name="RigidBody2D2" type="RigidBody2D" parent="." unique_id=1940826117]
-position = Vector2(374, 246)
-
-[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=1105308893]
-position = Vector2(525, 276)
+[node name="Game" type="Node" unique_id=434314932]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=647953769]
-position = Vector2(586, 553)
+position = Vector2(498, 579)
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1685142109]
-position = Vector2(-115, 38)
 shape = SubResource("RectangleShape2D_apyxu")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="StaticBody2D" unique_id=123783829]
+mesh = SubResource("QuadMesh_apyxu")
+
+[node name="Pufferfish" type="Node" parent="." unique_id=655478503 node_paths=PackedStringArray("targetCore")]
+script = ExtResource("2_h7iqs")
+targetCore = NodePath("RigidBody2D")
+
+[node name="RigidBody2D" parent="Pufferfish" unique_id=23452499 instance=ExtResource("1_vasa2")]
+position = Vector2(489, 279)

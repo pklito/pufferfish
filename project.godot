@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Pufferfish"
+run/main_scene="uid://wmqllq3qg2ls"
 config/features=PackedStringArray("4.8", "Forward Plus")
 config/icon="res://icon.svg"
 

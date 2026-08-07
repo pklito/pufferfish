@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://c5yb77l6qu3kh"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_dqbel"]
+radius = 50.0
+height = 100.0
+radial_segments = 16
+rings = 12
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_apyxu"]
+radius = 50.0
+
+[node name="RigidBody2D" type="RigidBody2D" unique_id=23452499]
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=295426970]
+mesh = SubResource("SphereMesh_dqbel")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1918045878]
+shape = SubResource("CircleShape2D_apyxu")
