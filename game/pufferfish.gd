@@ -1,6 +1,9 @@
 extends Node
 
+# Amount of rings on the perimeter of the pufferfish
 @export var amount : int = 20
+@export var radius : float = 40
+@export var nodeSize: float = 0.2
 @export var targetCore : Node2D
 @export var visualPolygon : Polygon2D
 @export var visualRim : Line2D
@@ -13,19 +16,20 @@ var listJoints := []
 var listRestingDists := []
 
 func _ready() -> void:
+	# What is the purpose of this?
 	for a in targetCore.get_children():
 		a.scale = Vector2(0.2,0.2)
 	for i in range(amount):
 		var child : RigidBody2D = sbnode.instantiate()
 		add_child(child)
 		listPoints.append(child)
-		child.global_position = targetCore.global_position + Vector2(0,40).rotated(6.28 * i / amount)
+		child.global_position = targetCore.global_position + Vector2(0,radius).rotated(2 * PI * i / amount)
 		for a in child.get_children():
-			a.scale = Vector2(0.2,0.2)
+			a.scale = Vector2(nodeSize, nodeSize)
 	
 	for i in range(listPoints.size()):
 		for j in range(i+1, listPoints.size()):
-			var joint = createJoint(listPoints[i],listPoints[j], 100, 0.3)
+			var joint = createJoint(listPoints[i],listPoints[j])
 			add_child(joint)
 			listJoints.append(joint)
 			listRestingDists.append(joint.rest_length)
@@ -33,7 +37,7 @@ func _ready() -> void:
 	
 	
 
-func createJoint(a : Node2D, b:Node2D, stiffness = 340.0, damping = 0.2) -> DampedSpringJoint2D:
+func createJoint(a : Node2D, b:Node2D, stiffness = 700, damping = 0.6) -> DampedSpringJoint2D:
 	var joint = DampedSpringJoint2D.new()
 	joint.global_position = a.global_position
 	var delta = b.global_position - a.global_position
