@@ -27,6 +27,7 @@ var listJoints := []
 var listRestingDists := []
 
 func _ready() -> void:
+	visualRim.width = 2 * nodeRadius
 	# What is the purpose of this?
 	for i in range(nodeCount):
 		var child : RigidBody2D = sbnode.instantiate()
