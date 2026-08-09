@@ -28,6 +28,7 @@ joypads/ignore_joypad_on_unfocused_application=true
 
 2d/physics_engine="Rapier2D"
 3d/physics_engine="Jolt Physics"
+2d/default_gravity=182.26800000000003
 
 [rendering]
 
