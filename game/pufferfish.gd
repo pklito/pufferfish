@@ -1,10 +1,9 @@
-extends Node
+extends Node2D
 
 # Amount of rings on the perimeter of the pufferfish
 @export var amount : int = 20
 @export var radius : float = 40
 @export var nodeSize: float = 0.2
-@export var targetCore : Node2D
 @export var visualPolygon : Polygon2D
 @export var visualRim : Line2D
 
@@ -17,13 +16,11 @@ var listRestingDists := []
 
 func _ready() -> void:
 	# What is the purpose of this?
-	for a in targetCore.get_children():
-		a.scale = Vector2(0.2,0.2)
 	for i in range(amount):
 		var child : RigidBody2D = sbnode.instantiate()
 		add_child(child)
 		listPoints.append(child)
-		child.global_position = targetCore.global_position + Vector2(0,radius).rotated(2 * PI * i / amount)
+		child.global_position = global_position + Vector2(0,radius).rotated(2 * PI * i / amount)
 		for a in child.get_children():
 			a.scale = Vector2(nodeSize, nodeSize)
 	
@@ -39,8 +36,8 @@ func _ready() -> void:
 
 func createJoint(a : Node2D, b:Node2D, stiffness = 700, damping = 0.6) -> DampedSpringJoint2D:
 	var joint = DampedSpringJoint2D.new()
-	joint.global_position = a.global_position
-	var delta = b.global_position - a.global_position
+	joint.global_position = a.position
+	var delta = b.position - a.position
 	joint.length = delta.length()
 	joint.node_a = a.get_path()
 	joint.node_b = b.get_path()
@@ -70,6 +67,6 @@ func setScale(scale : float):
 func _process(delta: float) -> void:
 	var points = []
 	for a in listPoints:
-		points.append(a.global_position)
+		points.append(a.position)
 	visualPolygon.polygon = points
 	visualRim.points = points
