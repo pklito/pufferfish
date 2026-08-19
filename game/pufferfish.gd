@@ -61,15 +61,27 @@ func _input(event: InputEvent) -> void:
 		else:
 			scaleTween.tween_method(setScale, 0.4, 1.0, 0.05).set_trans(Tween.TRANS_LINEAR)
 		scaleTween.play()
+	
+	
 
 func setScale(scale : float):
 	for i in range(listJoints.size()):
 		var joint = listJoints[i]
 		joint.rest_length = listRestingDists[i] * scale
-
-func _process(delta: float) -> void:
+		
+func updateRim() -> void:
 	var points = []
 	for a in listPoints:
 		points.append(a.global_position)
 	visualPolygon.polygon = points
 	visualRim.points = points
+
+func _process(delta: float) -> void:
+	updateRim()
+	var dir = Input.get_vector("left", "right", "up", "down")
+	var force_angle = dir.angle_to(Vector2(0,1))
+	print(force_angle)
+	
+	
+	
+	
