@@ -8,6 +8,16 @@ size = Vector2(880, 90)
 [sub_resource type="QuadMesh" id="QuadMesh_apyxu"]
 size = Vector2(880, 90)
 
+[sub_resource type="Curve" id="Curve_lp2uy"]
+_limits = [0.0, 700.0, 0.0, 1.0]
+_data = [Vector2(0, 558.4269), 0.0, 0.0, 0, 0, Vector2(0.71, 574.1572), 0.0, 0.0, 0, 0, Vector2(1, 456.17972), -12.841098, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_l1rk1"]
+_limits = [0.0, 2.0, 0.0, 1.0]
+_data = [Vector2(0, 1.1685394), 0.0, 0.0, 0, 0, Vector2(1, 1.2134832), 0.0, 0.0, 0, 0]
+point_count = 2
+
 [node name="Game" type="Node" unique_id=434314932]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=647953769]
@@ -21,15 +31,15 @@ shape = SubResource("RectangleShape2D_apyxu")
 [node name="MeshInstance2D" type="MeshInstance2D" parent="StaticBody2D" unique_id=123783829]
 mesh = SubResource("QuadMesh_apyxu")
 
-[node name="Pufferfish" type="Node" parent="." unique_id=614738856 node_paths=PackedStringArray("targetCore", "visualPolygon", "visualRim")]
+[node name="Pufferfish" type="Node2D" parent="." unique_id=35968489 node_paths=PackedStringArray("visualPolygon", "visualRim")]
+position = Vector2(408, 207)
 script = ExtResource("2_h7iqs")
-targetCore = NodePath("RigidBody2D")
 visualPolygon = NodePath("Polygon2D")
 visualRim = NodePath("Line2D")
-
-[node name="RigidBody2D" type="Node2D" parent="Pufferfish" unique_id=1053514779]
-position = Vector2(397, 185)
-metadata/_edit_group_ = true
+stiffnessCurve = SubResource("Curve_lp2uy")
+dampingCurve = SubResource("Curve_l1rk1")
+shrinkTime = 0.3
+expandTime = 0.15
 
 [node name="Line2D" type="Line2D" parent="Pufferfish" unique_id=1079842755]
 closed = true
