@@ -112,6 +112,7 @@ func _process(delta: float) -> void:
 		debugForcePoints.append(listPoints[wrapi(forcedCenterIndex - i, 0, nodeCount)].position)
 		listPoints[wrapi(forcedCenterIndex + i, 0, nodeCount)].apply_central_force(300*dir)
 		listPoints[wrapi(forcedCenterIndex - i, 0, nodeCount)].apply_central_force(300*dir)
+	#TODO: On paper, calculate so that there is no torque
 	queue_redraw()
 		
 	
