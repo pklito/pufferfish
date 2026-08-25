@@ -39,7 +39,6 @@ visualRim = NodePath("Line2D")
 stiffnessCurve = SubResource("Curve_lp2uy")
 dampingCurve = SubResource("Curve_l1rk1")
 shrinkTime = 0.3
-expandTime = 0.15
 
 [node name="Line2D" type="Line2D" parent="Pufferfish" unique_id=1079842755]
 closed = true

@@ -14,8 +14,8 @@ extends Node2D
 
 
 @export_category("Shrink expand")
-@export var shrinkTime : float = 0.15
-@export var expandTime : float = 0.05
+@export var shrinkTime : float = 0.05
+@export var expandTime : float = 0.15
 @export_range(0.1,1.0,0.01) var shrinkFactor : float = 0.4 
 
 
@@ -25,6 +25,7 @@ var sbnode : PackedScene = preload("res://game/SoftBodyNode.tscn")
 var listPoints := []
 var listJoints := []
 var listRestingDists := []
+var debugForcePoints := []
 
 func _ready() -> void:
 	visualRim.width = 2 * nodeRadius
@@ -88,11 +89,33 @@ func updateRim() -> void:
 	visualPolygon.polygon = points
 	visualRim.points = points
 
+func _draw() -> void:
+	for point in debugForcePoints:
+		draw_arc(point, nodeRadius, 0.0, TAU, 24, Color.RED, 3.0)
+	
+	
 func _process(delta: float) -> void:
 	updateRim()
 	var dir = Input.get_vector("left", "right", "up", "down")
-	var force_angle = dir.angle_to(Vector2(0,1))
-	print(force_angle)
+	var force_angle = dir.angle_to(Vector2(0,-1))
+	var orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
+	var forcedPointsCount = 4
+	var forcedCenterIndex = floori((-force_angle + orientation)*nodeCount/(2*PI))
+	print(orientation)
+	#TODO: MAKE PUSHED POINTS A DIFFERENT COLOR FOR DEBUGGING
+	debugForcePoints.clear()
+	for i in range(0, forcedPointsCount/2 +1):
+		if i == 0:
+			debugForcePoints.append(listPoints[wrapi(forcedCenterIndex, 0, nodeCount)].position)
+			listPoints[wrapi(forcedCenterIndex, 0, nodeCount)].apply_central_force(300*dir)
+		debugForcePoints.append(listPoints[wrapi(forcedCenterIndex + i, 0, nodeCount)].position)
+		debugForcePoints.append(listPoints[wrapi(forcedCenterIndex - i, 0, nodeCount)].position)
+		listPoints[wrapi(forcedCenterIndex + i, 0, nodeCount)].apply_central_force(300*dir)
+		listPoints[wrapi(forcedCenterIndex - i, 0, nodeCount)].apply_central_force(300*dir)
+	queue_redraw()
+		
+	
+	
 	
 	
 	
