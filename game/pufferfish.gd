@@ -6,14 +6,14 @@ extends Node2D
 
 @export_category("Ball config")
 # Keep this even (TODO: make a warning/throw an error if not)
-@export var nodeCount : int = 20	##Amount of softBodyNodes the ball has
+@export var nodeCount : int = 30	##Amount of softBodyNodes the ball has
 @export var radius : float = 50		##Ball total radius, including node collision sizes
 @export var nodeRadius: float = 10  ##Node collider radii
 @export var ballMass : float = 20
 @export var stiffnessCurve : Curve = Curve.new()
 @export var dampingCurve : Curve = Curve.new()
 @export var movementForce: float = 3000
-@export var spinForce: float = 80
+@export var spinTorque: float = 100000
 
 
 @export_category("Shrink expand")
@@ -123,6 +123,8 @@ func _physics_process(delta) -> void:
 	var force_angle = dir.angle_to(Vector2(0,-1))
 	var forcedPointsCount = 4
 	var forcedCenterIndex = roundi((-force_angle + orientation)*nodeCount/(2*PI))
+	var centerNode = listPoints[wrapi(forcedCenterIndex, 0, nodeCount)]
+	var oppositeNode = listPoints[wrapi(forcedCenterIndex + nodeCount/2, 0, nodeCount)]
 	var forcePerNode = movementForce * dir / (forcedPointsCount + 1)
 	#TODO: MAKE PUSHED POINTS A DIFFERENT COLOR FOR DEBUGGING
 	var residualTorque = 0
@@ -143,14 +145,23 @@ func _physics_process(delta) -> void:
 	# cancel the torque by applying a spinning force on both sides
 	# compromising slight rotation to make sure this extra force is not doing anything
 	# to the linear velocity
-	var centerNode = listPoints[wrapi(forcedCenterIndex, 0, nodeCount)]
-	var oppositeNode = listPoints[wrapi(forcedCenterIndex + nodeCount/2, 0, nodeCount)]
 	var correctingForceSize = residualTorque / (centerNode.position - CoM).length()
 	centerNode.apply_central_force(correctingForceSize/2 * (centerNode.position - CoM).normalized().orthogonal())
 	oppositeNode.apply_central_force(correctingForceSize/2 * (oppositeNode.position - CoM).normalized().orthogonal())
 	
+	var roll_input = Input.get_axis("spin_right", "spin_left")
+	var appliedRollForce = roll_input * spinTorque / (listPoints[0].position - CoM).length()
+	listPoints[0].apply_central_force(appliedRollForce/2 * (listPoints[0].position - CoM).normalized().orthogonal())
+	listPoints[nodeCount/2].apply_central_force(appliedRollForce/2 * (listPoints[nodeCount/2].position - CoM).normalized().orthogonal())
+	
+	
+	
+	#TODO: add backwards forces for squishing
 	#TODO: ADD A ROLL MOVMENT OPTION THIS CAN BE REALLY COOL
 	#TODO: Strong force until some velocity and then only the orthogonal component affects the movement
+	#TODO: Think about how we want the movement to be. We could have an opposite force apply
+	# twice or more times the usual strength. I kind of like the idea of no speed cap (the physics engine is probably
+	# applying some sort of damping in any case). We can have a brake button for the spin
 	print(angularVelocity)
 	queue_redraw()
 	
