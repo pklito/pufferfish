@@ -5,12 +5,15 @@ extends Node2D
 @export var visualRim : Line2D
 
 @export_category("Ball config")
+# Keep this even (TODO: make a warning/throw an error if not)
 @export var nodeCount : int = 20	##Amount of softBodyNodes the ball has
 @export var radius : float = 50		##Ball total radius, including node collision sizes
 @export var nodeRadius: float = 10  ##Node collider radii
 @export var ballMass : float = 20
 @export var stiffnessCurve : Curve = Curve.new()
 @export var dampingCurve : Curve = Curve.new()
+@export var movementForce: float = 3000
+@export var spinForce: float = 80
 
 
 @export_category("Shrink expand")
@@ -18,6 +21,9 @@ extends Node2D
 @export var expandTime : float = 0.15
 @export_range(0.1,1.0,0.01) var shrinkFactor : float = 0.4 
 
+var orientation : float = 0.0
+var previousOrientation : float = orientation
+var angularVelocity : float = 0.0
 
 var sbnode : PackedScene = preload("res://game/SoftBodyNode.tscn")
 # Called when the node enters the scene tree for the first time.
@@ -26,6 +32,11 @@ var listPoints := []
 var listJoints := []
 var listRestingDists := []
 var debugForcePoints := []
+
+# Is this right? Is global position the com of the spawn position
+var CoM = global_position
+var PreviousCoM = CoM
+var CoMVelocity = 0
 
 func _ready() -> void:
 	visualRim.width = 2 * nodeRadius
@@ -92,28 +103,57 @@ func updateRim() -> void:
 func _draw() -> void:
 	for point in debugForcePoints:
 		draw_arc(point, nodeRadius, 0.0, TAU, 24, Color.RED, 3.0)
+
+func updateCoM() -> void:
+	var sumPositions = Vector2.ZERO
+	for i in range(nodeCount):
+		sumPositions += listPoints[i].position
+	CoM = sumPositions/nodeCount
 	
 	
-func _process(delta: float) -> void:
+	
+func _physics_process(delta) -> void:
 	updateRim()
+	updateCoM()
+	previousOrientation = orientation
+	orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
+	angularVelocity = (orientation - previousOrientation)/delta
+	# DEALING WITH MOVEMENT
 	var dir = Input.get_vector("left", "right", "up", "down")
 	var force_angle = dir.angle_to(Vector2(0,-1))
-	var orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
 	var forcedPointsCount = 4
-	var forcedCenterIndex = floori((-force_angle + orientation)*nodeCount/(2*PI))
-	print(orientation)
+	var forcedCenterIndex = roundi((-force_angle + orientation)*nodeCount/(2*PI))
+	var forcePerNode = movementForce * dir / (forcedPointsCount + 1)
 	#TODO: MAKE PUSHED POINTS A DIFFERENT COLOR FOR DEBUGGING
+	var residualTorque = 0
 	debugForcePoints.clear()
 	for i in range(0, forcedPointsCount/2 +1):
 		if i == 0:
 			debugForcePoints.append(listPoints[wrapi(forcedCenterIndex, 0, nodeCount)].position)
-			listPoints[wrapi(forcedCenterIndex, 0, nodeCount)].apply_central_force(300*dir)
-		debugForcePoints.append(listPoints[wrapi(forcedCenterIndex + i, 0, nodeCount)].position)
-		debugForcePoints.append(listPoints[wrapi(forcedCenterIndex - i, 0, nodeCount)].position)
-		listPoints[wrapi(forcedCenterIndex + i, 0, nodeCount)].apply_central_force(300*dir)
-		listPoints[wrapi(forcedCenterIndex - i, 0, nodeCount)].apply_central_force(300*dir)
-	#TODO: On paper, calculate so that there is no torque
+			listPoints[wrapi(forcedCenterIndex, 0, nodeCount)].apply_central_force(forcePerNode)
+		else:
+			var rightNode = listPoints[wrapi(forcedCenterIndex + i, 0, nodeCount)]
+			var leftNode = listPoints[wrapi(forcedCenterIndex - i, 0, nodeCount)]
+			debugForcePoints.append(rightNode.position)
+			debugForcePoints.append(leftNode.position)
+			rightNode.apply_central_force(forcePerNode)
+			residualTorque += (rightNode.position - CoM).cross(forcePerNode)
+			leftNode.apply_central_force(forcePerNode)
+			residualTorque += (leftNode.position - CoM).cross(forcePerNode)
+	# cancel the torque by applying a spinning force on both sides
+	# compromising slight rotation to make sure this extra force is not doing anything
+	# to the linear velocity
+	var centerNode = listPoints[wrapi(forcedCenterIndex, 0, nodeCount)]
+	var oppositeNode = listPoints[wrapi(forcedCenterIndex + nodeCount/2, 0, nodeCount)]
+	var correctingForceSize = residualTorque / (centerNode.position - CoM).length()
+	centerNode.apply_central_force(correctingForceSize/2 * (centerNode.position - CoM).normalized().orthogonal())
+	oppositeNode.apply_central_force(correctingForceSize/2 * (oppositeNode.position - CoM).normalized().orthogonal())
+	
+	#TODO: ADD A ROLL MOVMENT OPTION THIS CAN BE REALLY COOL
+	#TODO: Strong force until some velocity and then only the orthogonal component affects the movement
+	print(angularVelocity)
 	queue_redraw()
+	
 		
 	
 	
