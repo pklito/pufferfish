@@ -9,11 +9,12 @@ extends Node2D
 @export var nodeCount : int = 30	##Amount of softBodyNodes the ball has
 @export var radius : float = 50		##Ball total radius, including node collision sizes
 @export var nodeRadius: float = 10  ##Node collider radii
-@export var ballMass : float = 20
+@export var ballMass : float = 10
 @export var stiffnessCurve : Curve = Curve.new()
 @export var dampingCurve : Curve = Curve.new()
-@export var movementForce: float = 3000
+@export var movementForce: float = 5000
 @export var spinTorque: float = 100000
+@export var squishForce: float = 50000
 
 
 @export_category("Shrink expand")
@@ -126,22 +127,44 @@ func _physics_process(delta) -> void:
 	var centerNode = listPoints[wrapi(forcedCenterIndex, 0, nodeCount)]
 	var oppositeNode = listPoints[wrapi(forcedCenterIndex + nodeCount/2, 0, nodeCount)]
 	var forcePerNode = movementForce * dir / (forcedPointsCount + 1)
+	var forwardSquishForce = squishForce * dir / (forcedPointsCount + 1)
+	var backwardSquishForce = -squishForce * dir / (nodeCount - forcedPointsCount - 1)
+	var forwardSquishIndexes := []
+	#TODO: for a squishing effect the force should be divided as follows:
+	# you have a counter force variable that you apply to all nodes.
+	# squishForce/( forced Points + 1) forwards
+	# squishForce/ (NodeCount - forcedPoints - 1) backwards
+	# when doing the forward forces apply the squish force and add the indeces to an index list
+	# in another loop apply all the squishforces for the rest
 	#TODO: MAKE PUSHED POINTS A DIFFERENT COLOR FOR DEBUGGING
 	var residualTorque = 0
 	debugForcePoints.clear()
 	for i in range(0, forcedPointsCount/2 +1):
 		if i == 0:
+			forwardSquishIndexes.append(wrapi(forcedCenterIndex, 0, nodeCount))
 			debugForcePoints.append(listPoints[wrapi(forcedCenterIndex, 0, nodeCount)].position)
 			listPoints[wrapi(forcedCenterIndex, 0, nodeCount)].apply_central_force(forcePerNode)
+			centerNode.apply_central_force(forwardSquishForce)
+			residualTorque += (centerNode.position - CoM).cross(forwardSquishForce)
 		else:
 			var rightNode = listPoints[wrapi(forcedCenterIndex + i, 0, nodeCount)]
 			var leftNode = listPoints[wrapi(forcedCenterIndex - i, 0, nodeCount)]
+			forwardSquishIndexes.append(wrapi(forcedCenterIndex + i, 0, nodeCount))
+			forwardSquishIndexes.append(wrapi(forcedCenterIndex - i, 0, nodeCount))
 			debugForcePoints.append(rightNode.position)
 			debugForcePoints.append(leftNode.position)
 			rightNode.apply_central_force(forcePerNode)
+			rightNode.apply_central_force(forwardSquishForce)
 			residualTorque += (rightNode.position - CoM).cross(forcePerNode)
+			residualTorque += (rightNode.position - CoM).cross(forwardSquishForce)
 			leftNode.apply_central_force(forcePerNode)
+			leftNode.apply_central_force(forwardSquishForce)
 			residualTorque += (leftNode.position - CoM).cross(forcePerNode)
+			residualTorque += (leftNode.position - CoM).cross(forwardSquishForce)
+	for i in range(nodeCount):
+		if not forwardSquishIndexes.has(i):
+			listPoints[i].apply_central_force(backwardSquishForce)
+			residualTorque += (listPoints[i].position - CoM).cross(backwardSquishForce)
 	# cancel the torque by applying a spinning force on both sides
 	# compromising slight rotation to make sure this extra force is not doing anything
 	# to the linear velocity
