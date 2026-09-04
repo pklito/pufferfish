@@ -14,7 +14,8 @@ extends Node2D
 @export var dampingCurve : Curve = Curve.new()
 @export var movementForce: float = 5000
 @export var spinTorque: float = 100000
-@export var squishForce: float = 50000
+@export var squishForce: float = 30000
+@export var spinDamping: float = 10000
 
 
 @export_category("Shrink expand")
@@ -111,6 +112,13 @@ func updateCoM() -> void:
 		sumPositions += listPoints[i].position
 	CoM = sumPositions/nodeCount
 	
+func applyTorque(tau) -> void:
+	var appliedForce = tau / (listPoints[0].position - CoM).length()
+	for i in range(nodeCount):
+		listPoints[i].apply_central_force(appliedForce/nodeCount * (listPoints[i].position - CoM).normalized().orthogonal())
+		
+	
+	
 	
 	
 func _physics_process(delta) -> void:
@@ -168,14 +176,10 @@ func _physics_process(delta) -> void:
 	# cancel the torque by applying a spinning force on both sides
 	# compromising slight rotation to make sure this extra force is not doing anything
 	# to the linear velocity
-	var correctingForceSize = residualTorque / (centerNode.position - CoM).length()
-	centerNode.apply_central_force(correctingForceSize/2 * (centerNode.position - CoM).normalized().orthogonal())
-	oppositeNode.apply_central_force(correctingForceSize/2 * (oppositeNode.position - CoM).normalized().orthogonal())
+	applyTorque(residualTorque)
 	
 	var roll_input = Input.get_axis("spin_right", "spin_left")
-	var appliedRollForce = roll_input * spinTorque / (listPoints[0].position - CoM).length()
-	listPoints[0].apply_central_force(appliedRollForce/2 * (listPoints[0].position - CoM).normalized().orthogonal())
-	listPoints[nodeCount/2].apply_central_force(appliedRollForce/2 * (listPoints[nodeCount/2].position - CoM).normalized().orthogonal())
+	applyTorque(roll_input * spinTorque)
 	
 	
 	
@@ -185,6 +189,8 @@ func _physics_process(delta) -> void:
 	#TODO: Think about how we want the movement to be. We could have an opposite force apply
 	# twice or more times the usual strength. I kind of like the idea of no speed cap (the physics engine is probably
 	# applying some sort of damping in any case). We can have a brake button for the spin
+	#TODO: at very angular momenta, apply a negating torque so that you can stay still. Make sure it is not
+	# too large such that the fish can't be spun.
 	print(angularVelocity)
 	queue_redraw()
 	
