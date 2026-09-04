@@ -40,6 +40,24 @@ var CoM = global_position
 var PreviousCoM = CoM
 var CoMVelocity = 0
 
+var I = updateI()
+var L = angularVelocity * I
+
+# If the angular momentum is smaller than this, apply damping
+@export var smallL = 300 * ballMass
+
+func updateI() -> float:
+	"""
+	Calculates the moment of inertia of the fish
+	"""
+	var Inertia = 0
+	for p in listPoints:
+		Inertia += p.mass * (p.position - CoM).length()**2
+	I  = Inertia
+	return Inertia
+		
+		
+
 func _ready() -> void:
 	visualRim.width = 2 * nodeRadius
 	# What is the purpose of this?
@@ -124,6 +142,8 @@ func applyTorque(tau) -> void:
 func _physics_process(delta) -> void:
 	updateRim()
 	updateCoM()
+	updateI()
+	L = angularVelocity * I
 	previousOrientation = orientation
 	orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
 	angularVelocity = (orientation - previousOrientation)/delta
@@ -177,21 +197,22 @@ func _physics_process(delta) -> void:
 	# compromising slight rotation to make sure this extra force is not doing anything
 	# to the linear velocity
 	applyTorque(residualTorque)
+	if abs(L) < smallL:
+		applyTorque( -L/(10*delta) )
 	
 	var roll_input = Input.get_axis("spin_right", "spin_left")
 	applyTorque(roll_input * spinTorque)
 	
 	
 	
-	#TODO: add backwards forces for squishing
-	#TODO: ADD A ROLL MOVMENT OPTION THIS CAN BE REALLY COOL
+
 	#TODO: Strong force until some velocity and then only the orthogonal component affects the movement
 	#TODO: Think about how we want the movement to be. We could have an opposite force apply
 	# twice or more times the usual strength. I kind of like the idea of no speed cap (the physics engine is probably
 	# applying some sort of damping in any case). We can have a brake button for the spin
-	#TODO: at very angular momenta, apply a negating torque so that you can stay still. Make sure it is not
+	#TODO: at very small angular momenta, apply a negating torque so that you can stay still. Make sure it is not
 	# too large such that the fish can't be spun.
-	print(angularVelocity)
+	print("L = ", angularVelocity*I)
 	queue_redraw()
 	
 		
