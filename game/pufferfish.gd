@@ -95,6 +95,7 @@ func createJoint(a : Node2D, b:Node2D, stiffness : float = 700, damping : float 
 	return joint
 
 var scaleTween : Tween
+var pushAmount: float = 0.0
 func _input(event: InputEvent) -> void:
 	if (event is InputEventMouseButton):
 		if(scaleTween != null):
@@ -148,7 +149,9 @@ func _physics_process(delta) -> void:
 	orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
 	angularVelocity = (orientation - previousOrientation)/delta
 	# DEALING WITH MOVEMENT
-	var dir = Input.get_vector("left", "right", "up", "down")
+	var dir = (listPoints[0].position - listPoints[nodeCount/2].position).normalized()
+	if(Input.get_vector("left","right","down","up").length_squared() < 0.5):
+		dir = Vector2(0,0)
 	var force_angle = dir.angle_to(Vector2(0,-1))
 	var forcedPointsCount = 4
 	var forcedCenterIndex = roundi((-force_angle + orientation)*nodeCount/(2*PI))
