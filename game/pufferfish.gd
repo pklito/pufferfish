@@ -28,12 +28,14 @@ var previousOrientation : float = orientation
 var angularVelocity : float = 0.0
 
 var sbnode : PackedScene = preload("res://game/SoftBodyNode.tscn")
+var Arrow : PackedScene = preload("res://game/arrow.tscn")
 # Called when the node enters the scene tree for the first time.
 
 var listPoints := []
 var listJoints := []
 var listRestingDists := []
 var debugForcePoints := []
+var arrow
 
 # Is this right? Is global position the com of the spawn position
 var CoM = global_position
@@ -77,6 +79,9 @@ func _ready() -> void:
 			add_child(joint)
 			listJoints.append(joint)
 			listRestingDists.append(joint.rest_length)
+			
+	arrow = Arrow.instantiate()
+	add_child(arrow)
 	
 	
 	
@@ -131,19 +136,40 @@ func updateCoM() -> void:
 		sumPositions += listPoints[i].position
 	CoM = sumPositions/nodeCount
 	
-func applyTorque(tau) -> void:
-	var appliedForce = tau / (listPoints[0].position - CoM).length()
+func applyTorque(tau) -> void: # Remember the more important accuracy is no net center of mass force
+	var appliedForce = tau / (2*(listPoints[0].position - CoM).length())
 	for i in range(nodeCount):
 		listPoints[i].apply_central_force(appliedForce/nodeCount * (listPoints[i].position - CoM).normalized().orthogonal())
 		
-	
-	
+func updateArrow() -> void:
+	arrow.position = CoM
+	arrow.rotation = -orientation
+
+@export var MAX_ANGULAR_MOMENTUM = 100000
+@export var maxTorque = MAX_ANGULAR_MOMENTUM/0.1
+var rollDiffThreshold = 3000
+
+func handle_rotation(delta):
+	var roll_input = Input.get_axis("spin_right", "spin_left")
+	if sign(roll_input) * L < MAX_ANGULAR_MOMENTUM: #if you are slower than the intended angular velocity or moving in the opposite direction
+		var diff = roll_input * MAX_ANGULAR_MOMENTUM - L # angular momentum needed to reach goal
+		var maxTorqueEffective
+		if abs(diff) > rollDiffThreshold:
+			if sign(L) != roll_input:
+				maxTorqueEffective = 2 * maxTorque
+			else:
+				maxTorqueEffective  = maxTorque
+			var torqueNeeded = sign(diff) * min(abs(diff / (delta)), maxTorqueEffective)
+			print(diff)
+			applyTorque(torqueNeeded)
+
 	
 	
 func _physics_process(delta) -> void:
 	updateRim()
 	updateCoM()
 	updateI()
+	updateArrow()
 	L = angularVelocity * I
 	previousOrientation = orientation
 	orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
@@ -201,10 +227,12 @@ func _physics_process(delta) -> void:
 	# to the linear velocity
 	applyTorque(residualTorque)
 	if abs(L) < smallL:
-		applyTorque( -L/(10*delta) )
+		applyTorque( -L/(10*delta))
+
+		
+	handle_rotation(delta)
 	
-	var roll_input = Input.get_axis("spin_right", "spin_left")
-	applyTorque(roll_input * spinTorque)
+	
 	
 	
 	
@@ -215,7 +243,6 @@ func _physics_process(delta) -> void:
 	# applying some sort of damping in any case). We can have a brake button for the spin
 	#TODO: at very small angular momenta, apply a negating torque so that you can stay still. Make sure it is not
 	# too large such that the fish can't be spun.
-	print("L = ", angularVelocity*I)
 	queue_redraw()
 	
 		
