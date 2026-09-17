@@ -101,6 +101,7 @@ func createJoint(a : Node2D, b:Node2D, stiffness : float = 700, damping : float 
 
 var scaleTween : Tween
 var pushAmount: float = 0.0
+
 func _input(event: InputEvent) -> void:
 	if (event is InputEventMouseButton):
 		if(scaleTween != null):
@@ -111,7 +112,7 @@ func _input(event: InputEvent) -> void:
 		else:
 			scaleTween.tween_method(setScale, shrinkFactor, 1.0, expandTime).set_trans(Tween.TRANS_LINEAR)
 		scaleTween.play()
-	
+
 	
 
 func setScale(scale : float):
@@ -162,7 +163,16 @@ func handle_rotation(delta):
 			var torqueNeeded = sign(diff) * min(abs(diff / (delta)), maxTorqueEffective)
 			print(diff)
 			applyTorque(torqueNeeded)
-
+			
+func handle_shrink(delta) -> void:
+	if(scaleTween != null):
+		scaleTween.stop()
+	scaleTween = get_tree().create_tween()
+	if (Input.is_action_pressed("shrink")):
+		scaleTween.tween_method(setScale, 1.0, shrinkFactor, shrinkTime).set_trans(Tween.TRANS_LINEAR)
+	else:
+		scaleTween.tween_method(setScale, shrinkFactor, 1.0, expandTime).set_trans(Tween.TRANS_LINEAR)
+	scaleTween.play()
 	
 	
 func _physics_process(delta) -> void:
@@ -170,13 +180,16 @@ func _physics_process(delta) -> void:
 	updateCoM()
 	updateI()
 	updateArrow()
+	"""
+	handle_shrink(delta)
+	"""
 	L = angularVelocity * I
 	previousOrientation = orientation
 	orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
 	angularVelocity = (orientation - previousOrientation)/delta
 	# DEALING WITH MOVEMENT
 	var dir = (listPoints[0].position - listPoints[nodeCount/2].position).normalized()
-	if(Input.get_vector("left","right","down","up").length_squared() < 0.5):
+	if (not Input.is_action_pressed("up")):
 		dir = Vector2(0,0)
 	var force_angle = dir.angle_to(Vector2(0,-1))
 	var forcedPointsCount = 4
