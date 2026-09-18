@@ -164,6 +164,10 @@ func handle_rotation(delta):
 			print(diff)
 			applyTorque(torqueNeeded)
 			
+			
+"""
+Still needs work
+"""
 func handle_shrink(delta) -> void:
 	if(scaleTween != null):
 		scaleTween.stop()
