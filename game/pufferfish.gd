@@ -16,6 +16,8 @@ extends Node2D
 @export var spinTorque: float = 100000
 @export var squishForce: float = 30000
 @export var spinDamping: float = 10000
+@export var shrinkSpeed: float = 2.2
+@export var expandSpeed: float = 2.2
 
 
 @export_category("Shrink expand")
@@ -41,6 +43,10 @@ var arrow
 var CoM = global_position
 var PreviousCoM = CoM
 var CoMVelocity = 0
+
+var fishSize = 1
+var maxfishSize = 1.3
+var minfishSize = 0.4
 
 var I = updateI()
 var L = angularVelocity * I
@@ -102,6 +108,7 @@ func createJoint(a : Node2D, b:Node2D, stiffness : float = 700, damping : float 
 var scaleTween : Tween
 var pushAmount: float = 0.0
 
+"""
 func _input(event: InputEvent) -> void:
 	if (event is InputEventMouseButton):
 		if(scaleTween != null):
@@ -112,7 +119,7 @@ func _input(event: InputEvent) -> void:
 		else:
 			scaleTween.tween_method(setScale, shrinkFactor, 1.0, expandTime).set_trans(Tween.TRANS_LINEAR)
 		scaleTween.play()
-
+"""
 	
 
 func setScale(scale : float):
@@ -152,8 +159,11 @@ var rollDiffThreshold = 3000
 
 func handle_rotation(delta):
 	var roll_input = Input.get_axis("spin_right", "spin_left")
-	if sign(roll_input) * L < MAX_ANGULAR_MOMENTUM: #if you are slower than the intended angular velocity or moving in the opposite direction
-		var diff = roll_input * MAX_ANGULAR_MOMENTUM - L # angular momentum needed to reach goal
+	# if you are slower than the intended angular velocity or moving in the opposite direction
+	# also I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
+	# velocity it naturally gets bigger so I am compensating)
+	if sign(roll_input) * L < MAX_ANGULAR_MOMENTUM * fishSize: 
+		var diff = roll_input * MAX_ANGULAR_MOMENTUM * fishSize - L # angular momentum needed to reach goal
 		var maxTorqueEffective
 		if abs(diff) > rollDiffThreshold:
 			if sign(L) != roll_input:
@@ -161,7 +171,8 @@ func handle_rotation(delta):
 			else:
 				maxTorqueEffective  = maxTorque
 			var torqueNeeded = sign(diff) * min(abs(diff / (delta)), maxTorqueEffective)
-			print(diff)
+			if frame % 10 == 0:
+				print("L ", L, " diff ", diff)
 			applyTorque(torqueNeeded)
 			
 			
@@ -169,28 +180,40 @@ func handle_rotation(delta):
 Still needs work
 """
 func handle_shrink(delta) -> void:
-	if(scaleTween != null):
-		scaleTween.stop()
-	scaleTween = get_tree().create_tween()
-	if (Input.is_action_pressed("shrink")):
-		scaleTween.tween_method(setScale, 1.0, shrinkFactor, shrinkTime).set_trans(Tween.TRANS_LINEAR)
-	else:
-		scaleTween.tween_method(setScale, shrinkFactor, 1.0, expandTime).set_trans(Tween.TRANS_LINEAR)
-	scaleTween.play()
-	
-	
+	if Input.is_action_pressed("shrink") and fishSize > minfishSize:
+		var newSize = fishSize - shrinkSpeed * delta
+		setScale(newSize)
+		fishSize = newSize
+	pass
+
+func handle_expand(delta) -> void:
+	if Input.is_action_pressed("expand") and fishSize < maxfishSize:
+		var newSize = fishSize + expandSpeed * delta
+		setScale(newSize)
+		fishSize = newSize
+	pass
+
+# for debugging
+var frame = 0
+
 func _physics_process(delta) -> void:
+	frame += 1
+	if frame % 10 == 0:
+		print("L ", L)
+		
 	updateRim()
 	updateCoM()
 	updateI()
 	updateArrow()
-	"""
 	handle_shrink(delta)
-	"""
+	handle_expand(delta)
+	
+	
+	
 	L = angularVelocity * I
 	previousOrientation = orientation
 	orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
-	angularVelocity = (orientation - previousOrientation)/delta
+	angularVelocity = (wrapf(orientation - previousOrientation, -PI, PI))/delta
 	# DEALING WITH MOVEMENT
 	var dir = (listPoints[0].position - listPoints[nodeCount/2].position).normalized()
 	if (not Input.is_action_pressed("up")):
@@ -248,6 +271,7 @@ func _physics_process(delta) -> void:
 
 		
 	handle_rotation(delta)
+
 	
 	
 	
