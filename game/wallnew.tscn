@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://djcdq3fuk0a0i"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_apyxu"]
+size = Vector2(880, 90)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_apyxu"]
+size = Vector2(928, 90)
+
+[node name="StaticBody2D" type="StaticBody2D" unique_id=1469730178]
+collision_mask = 3
+metadata/_edit_group_ = true
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=3948902]
+mesh = SubResource("QuadMesh_apyxu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=478316235]
+shape = SubResource("RectangleShape2D_apyxu")

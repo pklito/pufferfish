@@ -3,6 +3,9 @@
 [ext_resource type="Script" uid="uid://f22ai8kjfncw" path="res://game/game.gd" id="1_vasa2"]
 [ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://game/pufferfish.gd" id="2_h7iqs"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_apyxu"]
+size = Vector2(880, 90)
+
 [sub_resource type="Curve" id="Curve_lp2uy"]
 _limits = [0.0, 700.0, 0.0, 1.0]
 _data = [Vector2(0, 558.4269), 0.0, 0.0, 0, 0, Vector2(0.71, 574.1572), 0.0, 0.0, 0, 0, Vector2(1, 456.17972), -12.841098, 0.0, 0, 0]
@@ -16,8 +19,18 @@ point_count = 2
 [node name="Game" type="Node" unique_id=434314932]
 script = ExtResource("1_vasa2")
 
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=647953769]
+position = Vector2(575, 595)
+collision_mask = 3
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1685142109]
+shape = SubResource("RectangleShape2D_apyxu")
+
+[node name="Walls" type="Node2D" parent="StaticBody2D" unique_id=1154089070]
+
 [node name="Pufferfish" type="Node2D" parent="." unique_id=35968489 node_paths=PackedStringArray("visualPolygon", "visualRim")]
-position = Vector2(598, 261)
+position = Vector2(408, 207)
 script = ExtResource("2_h7iqs")
 visualPolygon = NodePath("Polygon2D")
 visualRim = NodePath("Line2D")
@@ -36,5 +49,3 @@ joint_mode = 2
 color = Color(0.5948784, 0.6591754, 1, 1)
 polygon = PackedVector2Array(253, -27, 293, 17, 297, 76, 237, 144, 118, 174, 59, 141, 34, 97, 35, 25, 69, -17, 159, -45)
 uv = PackedVector2Array(-5, -3, 485, 8, 394, 227, -138, 269, -170, 32, -70, -68)
-
-[node name="Walls" type="Node2D" parent="." unique_id=397462627]
