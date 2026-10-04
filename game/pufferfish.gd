@@ -57,6 +57,13 @@ var minfishSize = 0.4
 var I = updateI()
 var L = angularVelocity * I
 
+var flipHapenning : bool = false
+var timeSinceFlip : float = 0
+@export var flipTime : float = 0.6
+
+var explosionHapenning : bool
+var timeSinceExplosions : float
+
 # If the angular momentum is smaller than this, apply damping
 @export var smallL = 300 * ballMass
 
@@ -170,7 +177,7 @@ func handle_rotation(delta):
 	# if you are slower than the intended angular velocity or moving in the opposite direction
 	# also I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
 	# velocity it naturally gets bigger so I am compensating)
-	if sign(roll_input) * L < MAX_ANGULAR_MOMENTUM * fishSize: 
+	if sign(roll_input) * L < MAX_ANGULAR_MOMENTUM * fishSize and not flipHapenning: 
 		var diff = roll_input * MAX_ANGULAR_MOMENTUM * fishSize - L # angular momentum needed to reach goal
 		var maxTorqueEffective
 		if abs(diff) > rollDiffThreshold:
@@ -188,18 +195,44 @@ func handle_rotation(delta):
 Still needs work
 """
 func handle_shrink(delta) -> void:
-	if Input.is_action_pressed("shrink") and fishSize > minfishSize:
+	if Input.is_action_pressed("shrink") and fishSize > minfishSize and not explosionHapenning:
 		var newSize = fishSize - shrinkSpeed * delta
 		setScale(newSize)
 		fishSize = newSize
 	pass
 
 func handle_expand(delta) -> void:
-	if Input.is_action_pressed("expand") and fishSize < maxfishSize:
+	if Input.is_action_pressed("expand") and fishSize < maxfishSize and not explosionHapenning:
 		var newSize = fishSize + expandSpeed * delta
 		setScale(newSize)
 		fishSize = newSize
 	pass
+	
+func handle_flip(delta) -> void:
+	var flipDirection = 0.0
+	if Input.is_action_just_pressed("flip right") and not flipHapenning:
+		flipDirection = -1.0
+	elif Input.is_action_just_pressed("flip left") and not flipHapenning:
+		flipDirection = 1.0
+	if flipDirection != 0:
+		# do two spins per flip (can parameterize number of flips maybe)
+		var desiredAngularVelocity = 8 * PI / flipTime
+		# tau * dt = I * (domega)
+		var tauImpulse = I * desiredAngularVelocity / delta
+		
+		# prefactor is phenomenologically done (by eye for now)
+		applyTorque(0.88*flipDirection * tauImpulse)
+		flipHapenning = true
+		
+	if flipHapenning:
+		if timeSinceFlip >= flipTime:
+			flipHapenning = false
+			timeSinceFlip = 0
+		else:
+			timeSinceFlip += delta
+			
+		
+		
 
 # for debugging
 var frame = 0
@@ -215,6 +248,8 @@ func _physics_process(delta) -> void:
 	updateArrow()
 	handle_shrink(delta)
 	handle_expand(delta)
+	handle_rotation(delta)
+	handle_flip(delta)
 	
 	
 	
@@ -278,7 +313,7 @@ func _physics_process(delta) -> void:
 		applyTorque( -L/(10*delta))
 
 		
-	handle_rotation(delta)
+	
 
 	
 	

@@ -12,6 +12,7 @@ radius = 20.0
 
 [node name="Ball" type="RigidBody2D" unique_id=1322935782]
 collision_mask = 3
+mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_lp2uy")
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=158262459]

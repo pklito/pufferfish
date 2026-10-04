@@ -2,7 +2,7 @@ extends Node
 
 
 const defaultFieldSize := Vector2(1152, 600.0)
-@export var fieldSizeMult = 1
+@export var fieldSizeMult = 1.0
 var fieldSize
 
 
