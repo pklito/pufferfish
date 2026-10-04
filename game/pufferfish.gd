@@ -1,5 +1,11 @@
 extends Node2D
 
+
+# Debugging variables
+
+# drawing stuff (right now just the nodes that are being pushed)
+var draw_on = false
+
 @export_category("Connections")
 @export var visualPolygon : Polygon2D
 @export var visualRim : Line2D
@@ -134,9 +140,11 @@ func updateRim() -> void:
 	visualPolygon.polygon = points
 	visualRim.points = points
 
+# for debugging which nodes are being pushed
 func _draw() -> void:
-	for point in debugForcePoints:
-		draw_arc(point, nodeRadius, 0.0, TAU, 24, Color.RED, 3.0)
+	if draw_on:
+		for point in debugForcePoints:
+			draw_arc(point, nodeRadius, 0.0, TAU, 24, Color.RED, 3.0)
 
 func updateCoM() -> void:
 	var sumPositions = Vector2.ZERO
@@ -284,7 +292,8 @@ func _physics_process(delta) -> void:
 	# applying some sort of damping in any case). We can have a brake button for the spin
 	#TODO: at very small angular momenta, apply a negating torque so that you can stay still. Make sure it is not
 	# too large such that the fish can't be spun.
-	queue_redraw()
+	
+	#queue_redraw()
 	
 		
 	
