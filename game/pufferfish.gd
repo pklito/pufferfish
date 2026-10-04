@@ -286,13 +286,13 @@ func _physics_process(delta) -> void:
 	
 	
 
-	#TODO: Strong force until some velocity and then only the orthogonal component affects the movement
-	#TODO: Think about how we want the movement to be. We could have an opposite force apply
-	# twice or more times the usual strength. I kind of like the idea of no speed cap (the physics engine is probably
-	# applying some sort of damping in any case). We can have a brake button for the spin
-	#TODO: at very small angular momenta, apply a negating torque so that you can stay still. Make sure it is not
-	# too large such that the fish can't be spun.
+	#TODO: Strong force until some velocity and then only the orthogonal component affects the movement (maybe. More
+	# generally, need a speed cap for the fish
 	
+	#TODO: Add the quick expand mechanic
+	#TODO: Add goals
+	#TODO: Add more players and then a scoreboard and timer (possibly as part of background?)
+	#TODO: Add menu
 	#queue_redraw()
 	
 		

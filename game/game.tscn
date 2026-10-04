@@ -15,6 +15,7 @@ point_count = 2
 
 [node name="Game" type="Node" unique_id=434314932]
 script = ExtResource("1_vasa2")
+fieldSizeMult = 2
 
 [node name="Pufferfish" type="Node2D" parent="." unique_id=35968489 node_paths=PackedStringArray("visualPolygon", "visualRim")]
 position = Vector2(598, 261)
@@ -38,3 +39,5 @@ polygon = PackedVector2Array(253, -27, 293, 17, 297, 76, 237, 144, 118, 174, 59,
 uv = PackedVector2Array(-5, -3, 485, 8, 394, 227, -138, 269, -170, 32, -70, -68)
 
 [node name="Walls" type="Node2D" parent="." unique_id=397462627]
+
+[node name="Camera" type="Camera2D" parent="." unique_id=878586969]
