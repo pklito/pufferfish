@@ -58,8 +58,10 @@ var I = updateI()
 var L = angularVelocity * I
 
 var flipHapenning : bool = false
-var timeSinceFlip : float = 0
-@export var flipTime : float = 0.6
+var rotationSinceFlip : float = 0
+var flipTimeRemaining : float = 0
+@export var flipTime : float = 0.5
+@export var flipStopThreshold : float = 0.05
 
 var explosionHapenning : bool
 var timeSinceExplosions : float
@@ -160,7 +162,7 @@ func updateCoM() -> void:
 	CoM = sumPositions/nodeCount
 	
 func applyTorque(tau) -> void: # Remember the more important accuracy is no net center of mass force
-	var appliedForce = tau / (2*(listPoints[0].position - CoM).length())
+	var appliedForce = tau / ((listPoints[0].position - CoM).length())
 	for i in range(nodeCount):
 		listPoints[i].apply_central_force(appliedForce/nodeCount * (listPoints[i].position - CoM).normalized().orthogonal())
 		
@@ -216,20 +218,28 @@ func handle_flip(delta) -> void:
 		flipDirection = 1.0
 	if flipDirection != 0:
 		# do two spins per flip (can parameterize number of flips maybe)
-		var desiredAngularVelocity = 8 * PI / flipTime
+		var desiredAngularVelocity = 4 * PI / flipTime
 		# tau * dt = I * (domega)
 		var tauImpulse = I * desiredAngularVelocity / delta
-		
-		# prefactor is phenomenologically done (by eye for now)
-		applyTorque(0.88*flipDirection * tauImpulse)
+		print(tauImpulse)
+		applyTorque(flipDirection * tauImpulse)
 		flipHapenning = true
+		rotationSinceFlip = 0
+		flipTimeRemaining = flipTime
 		
 	if flipHapenning:
-		if timeSinceFlip >= flipTime:
+		flipTimeRemaining -= delta
+		if flipDirection == 0:
+			rotationSinceFlip += wrapf(orientation - previousOrientation, -PI, PI)
+		# flip completes one rotation
+		var remainingRotation = 2 * PI - abs(rotationSinceFlip)
+		if abs(remainingRotation) <= flipStopThreshold or flipTimeRemaining <= 0:
 			flipHapenning = false
-			timeSinceFlip = 0
-		else:
-			timeSinceFlip += delta
+		elif remainingRotation > 0 and remainingRotation <= PI / 2.0:
+			# this is from vfinal^2 = vi^2 - 2ax, setting vfinal = 0, isolating a, and converting to a force (but for the rotational equivalents)
+			# since remaining rotation is always positive, the sign is adjusted by opposing the current angular velocity
+			var brakingTorque = -sign(angularVelocity) * I * angularVelocity ** 2 / (2.0 * remainingRotation)
+			applyTorque(brakingTorque)
 			
 		
 		
@@ -239,24 +249,28 @@ var frame = 0
 
 func _physics_process(delta) -> void:
 	frame += 1
+	"""
 	if frame % 10 == 0:
 		print("L ", L)
+	"""
 		
 	updateRim()
 	updateCoM()
 	updateI()
+	previousOrientation = orientation
+	orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
+	angularVelocity = (wrapf(orientation - previousOrientation, -PI, PI))/delta
+	L = angularVelocity * I
 	updateArrow()
 	handle_shrink(delta)
 	handle_expand(delta)
 	handle_rotation(delta)
+	
+	
+	
+	
+	
 	handle_flip(delta)
-	
-	
-	
-	L = angularVelocity * I
-	previousOrientation = orientation
-	orientation = (listPoints[0].position - listPoints[nodeCount/2].position).angle_to(Vector2(0,1))
-	angularVelocity = (wrapf(orientation - previousOrientation, -PI, PI))/delta
 	# DEALING WITH MOVEMENT
 	var dir = (listPoints[0].position - listPoints[nodeCount/2].position).normalized()
 	if (not Input.is_action_pressed("up")):
@@ -328,6 +342,16 @@ func _physics_process(delta) -> void:
 	#TODO: Add goals
 	#TODO: Add more players and then a scoreboard and timer (possibly as part of background?)
 	#TODO: Add menu
+	
+	#TODO: the reason I needed to half the torque to stop properly is that when going to 0 once you are 
+	# going in the wrong direction you get double the torque applied in the other direction. Try to fix this.
+	# (I might be wrong about this. If I am right, just make the condition for double torque only apply if the gap is large
+	# AND you are going in the worng direction. This needs more thought.)
+	
+	#TODO: adjusting the flip speed acoording to flip time is probably not the best. One good solution is to
+	# check (maybe by code) how long a flip takes and then set the flip time manually, and the flip kick 
+	# seperately (remember the purpose of this is that if something prevents the player from flipping they should 
+	# be able to move after again after a time roughly equal to the time it would have taken to flip
 	#queue_redraw()
 	
 		

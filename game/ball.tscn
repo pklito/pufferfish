@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dswtwramqdnot"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_lp2uy"]
-bounce = 1.0
+bounce = 0.6
 
 [sub_resource type="SphereMesh" id="SphereMesh_ball"]
 radius = 20.0
