@@ -352,6 +352,8 @@ func _physics_process(delta) -> void:
 	# check (maybe by code) how long a flip takes and then set the flip time manually, and the flip kick 
 	# seperately (remember the purpose of this is that if something prevents the player from flipping they should 
 	# be able to move after again after a time roughly equal to the time it would have taken to flip
+	
+	#TODO: ideas: go slower when big, add brake button, 
 	#queue_redraw()
 	
 		
