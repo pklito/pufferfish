@@ -9,8 +9,8 @@ var fieldSize
 var wallScene: PackedScene = preload("res://game/wallnew.tscn")
 var ballScene: PackedScene = preload("res://game/ball.tscn")
 
-@onready var walls: Node2D = $Walls
-@onready var Camera = $Camera
+@onready var walls: Node2D = $World/Walls
+@onready var Camera = $World/Camera
 
 
 

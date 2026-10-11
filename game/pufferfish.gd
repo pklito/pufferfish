@@ -9,6 +9,7 @@ var draw_on = false
 @export_category("Connections")
 @export var visualPolygon : Polygon2D
 @export var visualRim : Line2D
+@export var arrow : Sprite2D
 
 @export_category("Ball config")
 # Keep this even (TODO: make a warning/throw an error if not)
@@ -25,25 +26,24 @@ var draw_on = false
 @export var shrinkSpeed: float = 2.2
 @export var expandSpeed: float = 2.2
 
-
 @export_category("Shrink expand")
 @export var shrinkTime : float = 0.05
 @export var expandTime : float = 0.15
 @export_range(0.1,1.0,0.01) var shrinkFactor : float = 0.4 
 
+# If the angular momentum is smaller than this, apply damping
+@export var smallL = 300 * ballMass
+
 var orientation : float = 0.0
 var previousOrientation : float = orientation
 var angularVelocity : float = 0.0
 
-var sbnode : PackedScene = preload("res://game/SoftBodyNode.tscn")
-var Arrow : PackedScene = preload("res://game/arrow.tscn")
-# Called when the node enters the scene tree for the first time.
+var SOFT_BODY_NODE : PackedScene = preload("res://game/SoftBodyNode.tscn")
 
 var listPoints := []
 var listJoints := []
 var listRestingDists := []
 var debugForcePoints := []
-var arrow
 
 # Is this right? Is global position the com of the spawn position
 var CoM = global_position
@@ -66,26 +66,12 @@ var flipTimeRemaining : float = 0
 var explosionHapenning : bool
 var timeSinceExplosions : float
 
-# If the angular momentum is smaller than this, apply damping
-@export var smallL = 300 * ballMass
-
-func updateI() -> float:
-	"""
-	Calculates the moment of inertia of the fish
-	"""
-	var Inertia = 0
-	for p in listPoints:
-		Inertia += p.mass * (p.position - CoM).length()**2
-	I  = Inertia
-	return Inertia
-		
-		
 
 func _ready() -> void:
 	visualRim.width = 2 * nodeRadius
 	# What is the purpose of this?
 	for i in range(nodeCount):
-		var child : RigidBody2D = sbnode.instantiate()
+		var child : RigidBody2D = SOFT_BODY_NODE.instantiate()
 		child.mass = ballMass / nodeCount
 		add_child(child)
 		listPoints.append(child)
@@ -100,160 +86,17 @@ func _ready() -> void:
 			add_child(joint)
 			listJoints.append(joint)
 			listRestingDists.append(joint.rest_length)
-			
-	arrow = Arrow.instantiate()
-	add_child(arrow)
-	
-	
-	
-
-func createJoint(a : Node2D, b:Node2D, stiffness : float = 700, damping : float = 0.6) -> DampedSpringJoint2D:
-	var joint = DampedSpringJoint2D.new()
-	joint.global_position = a.position
-	var delta = b.position - a.position
-	joint.length = delta.length()
-	joint.node_a = a.get_path()
-	joint.node_b = b.get_path()
-	joint.global_rotation = atan2(-delta.x,delta.y)
-	joint.stiffness = stiffness
-	joint.damping = damping
-	joint.rest_length = joint.length
-	return joint
-
-var scaleTween : Tween
-var pushAmount: float = 0.0
-
-"""
-func _input(event: InputEvent) -> void:
-	if (event is InputEventMouseButton):
-		if(scaleTween != null):
-			scaleTween.stop()
-		scaleTween = get_tree().create_tween()
-		if (event.pressed):
-			scaleTween.tween_method(setScale, 1.0, shrinkFactor, shrinkTime).set_trans(Tween.TRANS_LINEAR)
-		else:
-			scaleTween.tween_method(setScale, shrinkFactor, 1.0, expandTime).set_trans(Tween.TRANS_LINEAR)
-		scaleTween.play()
-"""
-	
-
-func setScale(scale : float):
-	for i in range(listJoints.size()):
-		var joint = listJoints[i]
-		joint.rest_length = listRestingDists[i] * scale
-		
-func updateRim() -> void:
-	var points = []
-	for a in listPoints:
-		points.append(a.position)
-	visualPolygon.polygon = points
-	visualRim.points = points
-
-# for debugging which nodes are being pushed
-func _draw() -> void:
-	if draw_on:
-		for point in debugForcePoints:
-			draw_arc(point, nodeRadius, 0.0, TAU, 24, Color.RED, 3.0)
-
-func updateCoM() -> void:
-	var sumPositions = Vector2.ZERO
-	for i in range(nodeCount):
-		sumPositions += listPoints[i].position
-	CoM = sumPositions/nodeCount
-	
-func applyTorque(tau) -> void: # Remember the more important accuracy is no net center of mass force
-	var appliedForce = tau / ((listPoints[0].position - CoM).length())
-	for i in range(nodeCount):
-		listPoints[i].apply_central_force(appliedForce/nodeCount * (listPoints[i].position - CoM).normalized().orthogonal())
-		
-func updateArrow() -> void:
-	arrow.position = CoM
-	arrow.rotation = -orientation
-
-@export var MAX_ANGULAR_MOMENTUM = 100000
-@export var maxTorque = MAX_ANGULAR_MOMENTUM/0.1
-var rollDiffThreshold = 3000
-
-func handle_rotation(delta):
-	var roll_input = Input.get_axis("spin_right", "spin_left")
-	# if you are slower than the intended angular velocity or moving in the opposite direction
-	# also I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
-	# velocity it naturally gets bigger so I am compensating)
-	if sign(roll_input) * L < MAX_ANGULAR_MOMENTUM * fishSize and not flipHapenning: 
-		var diff = roll_input * MAX_ANGULAR_MOMENTUM * fishSize - L # angular momentum needed to reach goal
-		var maxTorqueEffective
-		if abs(diff) > rollDiffThreshold:
-			if sign(L) != roll_input:
-				maxTorqueEffective = 2 * maxTorque
-			else:
-				maxTorqueEffective  = maxTorque
-			var torqueNeeded = sign(diff) * min(abs(diff / (delta)), maxTorqueEffective)
-			if frame % 10 == 0:
-				print("L ", L, " diff ", diff)
-			applyTorque(torqueNeeded)
-			
-			
-"""
-Still needs work
-"""
-func handle_shrink(delta) -> void:
-	if Input.is_action_pressed("shrink") and fishSize > minfishSize and not explosionHapenning:
-		var newSize = fishSize - shrinkSpeed * delta
-		setScale(newSize)
-		fishSize = newSize
-	pass
-
-func handle_expand(delta) -> void:
-	if Input.is_action_pressed("expand") and fishSize < maxfishSize and not explosionHapenning:
-		var newSize = fishSize + expandSpeed * delta
-		setScale(newSize)
-		fishSize = newSize
-	pass
-	
-func handle_flip(delta) -> void:
-	var flipDirection = 0.0
-	if Input.is_action_just_pressed("flip right") and not flipHapenning:
-		flipDirection = -1.0
-	elif Input.is_action_just_pressed("flip left") and not flipHapenning:
-		flipDirection = 1.0
-	if flipDirection != 0:
-		# do two spins per flip (can parameterize number of flips maybe)
-		var desiredAngularVelocity = 4 * PI / flipTime
-		# tau * dt = I * (domega)
-		var tauImpulse = I * desiredAngularVelocity / delta
-		print(tauImpulse)
-		applyTorque(flipDirection * tauImpulse)
-		flipHapenning = true
-		rotationSinceFlip = 0
-		flipTimeRemaining = flipTime
-		
-	if flipHapenning:
-		flipTimeRemaining -= delta
-		if flipDirection == 0:
-			rotationSinceFlip += wrapf(orientation - previousOrientation, -PI, PI)
-		# flip completes one rotation
-		var remainingRotation = 2 * PI - abs(rotationSinceFlip)
-		if abs(remainingRotation) <= flipStopThreshold or flipTimeRemaining <= 0:
-			flipHapenning = false
-		elif remainingRotation > 0 and remainingRotation <= PI / 2.0:
-			# this is from vfinal^2 = vi^2 - 2ax, setting vfinal = 0, isolating a, and converting to a force (but for the rotational equivalents)
-			# since remaining rotation is always positive, the sign is adjusted by opposing the current angular velocity
-			var brakingTorque = -sign(angularVelocity) * I * angularVelocity ** 2 / (2.0 * remainingRotation)
-			applyTorque(brakingTorque)
-			
-		
-		
 
 # for debugging
 var frame = 0
 
 func _physics_process(delta) -> void:
 	frame += 1
-	"""
-	if frame % 10 == 0:
-		print("L ", L)
-	"""
-		
+	#
+	# if frame % 10 == 0:
+	# 	print("L ", L)
+	# 
+	
 	updateRim()
 	updateCoM()
 	updateI()
@@ -265,9 +108,6 @@ func _physics_process(delta) -> void:
 	handle_shrink(delta)
 	handle_expand(delta)
 	handle_rotation(delta)
-	
-	
-	
 	
 	
 	handle_flip(delta)
@@ -329,12 +169,6 @@ func _physics_process(delta) -> void:
 		
 	
 
-	
-	
-	
-	
-	
-
 	#TODO: Strong force until some velocity and then only the orthogonal component affects the movement (maybe. More
 	# generally, need a speed cap for the fish
 	
@@ -355,11 +189,150 @@ func _physics_process(delta) -> void:
 	
 	#TODO: ideas: go slower when big, add brake button, 
 	#queue_redraw()
-	
+
+func updateI() -> float:
+	#
+	#  Calculates the moment of inertia of the fish
+	#
+	var Inertia = 0
+	for p in listPoints:
+		Inertia += p.mass * (p.position - CoM).length()**2
+	I  = Inertia
+	return Inertia
 		
 	
+
+func createJoint(a : Node2D, b:Node2D, stiffness : float = 700, damping : float = 0.6) -> DampedSpringJoint2D:
+	var joint = DampedSpringJoint2D.new()
+	joint.global_position = a.position
+	var delta = b.position - a.position
+	joint.length = delta.length()
+	joint.node_a = a.get_path()
+	joint.node_b = b.get_path()
+	joint.global_rotation = atan2(-delta.x,delta.y)
+	joint.stiffness = stiffness
+	joint.damping = damping
+	joint.rest_length = joint.length
+	return joint
+
+var scaleTween : Tween
+var pushAmount: float = 0.0
+
+
+# func _input(event: InputEvent) -> void:
+# 	if (event is InputEventMouseButton):
+# 		if(scaleTween != null):
+# 			scaleTween.stop()
+# 		scaleTween = get_tree().create_tween()
+# 		if (event.pressed):
+# 			scaleTween.tween_method(setScale, 1.0, shrinkFactor, shrinkTime).set_trans(Tween.TRANS_LINEAR)
+# 		else:
+# 			scaleTween.tween_method(setScale, shrinkFactor, 1.0, expandTime).set_trans(Tween.TRANS_LINEAR)
+# 		scaleTween.play()
+# 	
+
+func setScale(pscale : float):
+	for i in range(listJoints.size()):
+		var joint = listJoints[i]
+		joint.rest_length = listRestingDists[i] * pscale
+
+func updateRim() -> void:
+	var points = []
+	for a in listPoints:
+		points.append(a.position)
+	visualPolygon.polygon = points
+	visualRim.points = points
+
+# for debugging which nodes are being pushed
+func _draw() -> void:
+	if draw_on:
+		for point in debugForcePoints:
+			draw_arc(point, nodeRadius, 0.0, TAU, 24, Color.RED, 3.0)
+
+func updateCoM() -> void:
+	var sumPositions = Vector2.ZERO
+	for i in range(nodeCount):
+		sumPositions += listPoints[i].position
+	CoM = sumPositions/nodeCount
 	
+func applyTorque(tau) -> void: # Remember the more important accuracy is no net center of mass force
+	var appliedForce = tau / ((listPoints[0].position - CoM).length())
+	for i in range(nodeCount):
+		listPoints[i].apply_central_force(appliedForce/nodeCount * (listPoints[i].position - CoM).normalized().orthogonal())
+		
+func updateArrow() -> void:
+	arrow.position = CoM
+	arrow.rotation = -orientation
+
+@export var MAX_ANGULAR_MOMENTUM = 100000
+@export var maxTorque = MAX_ANGULAR_MOMENTUM/0.1
+var rollDiffThreshold = 3000
+
+func handle_rotation(delta):
+	var roll_input = Input.get_axis("spin_right", "spin_left")
+	# if you are slower than the intended angular velocity or moving in the opposite direction
+	# also I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
+	# velocity it naturally gets bigger so I am compensating)
+	if sign(roll_input) * L < MAX_ANGULAR_MOMENTUM * fishSize and not flipHapenning: 
+		var diff = roll_input * MAX_ANGULAR_MOMENTUM * fishSize - L # angular momentum needed to reach goal
+		var maxTorqueEffective
+		if abs(diff) > rollDiffThreshold:
+			if sign(L) != roll_input:
+				maxTorqueEffective = 2 * maxTorque
+			else:
+				maxTorqueEffective  = maxTorque
+			var torqueNeeded = sign(diff) * min(abs(diff / (delta)), maxTorqueEffective)
+			if frame % 10 == 0:
+				print("L ", L, " diff ", diff)
+			applyTorque(torqueNeeded)
+			
+			
+#Still needs work
+
+func handle_shrink(delta) -> void:
+	if Input.is_action_pressed("shrink") and fishSize > minfishSize and not explosionHapenning:
+		var newSize = fishSize - shrinkSpeed * delta
+		setScale(newSize)
+		fishSize = newSize
+	pass
+
+func handle_expand(delta) -> void:
+	if Input.is_action_pressed("expand") and fishSize < maxfishSize and not explosionHapenning:
+		var newSize = fishSize + expandSpeed * delta
+		setScale(newSize)
+		fishSize = newSize
+	pass
 	
-	
-	
-	
+func handle_flip(delta) -> void:
+	var flipDirection = 0.0
+	if Input.is_action_just_pressed("flip right") and not flipHapenning:
+		flipDirection = -1.0
+	elif Input.is_action_just_pressed("flip left") and not flipHapenning:
+		flipDirection = 1.0
+	if flipDirection != 0:
+		# do two spins per flip (can parameterize number of flips maybe)
+		var desiredAngularVelocity = 4 * PI / flipTime
+		# tau * dt = I * (domega)
+		var tauImpulse = I * desiredAngularVelocity / delta
+		print(tauImpulse)
+		applyTorque(flipDirection * tauImpulse)
+		flipHapenning = true
+		rotationSinceFlip = 0
+		flipTimeRemaining = flipTime
+		
+	if flipHapenning:
+		flipTimeRemaining -= delta
+		if flipDirection == 0:
+			rotationSinceFlip += wrapf(orientation - previousOrientation, -PI, PI)
+		# flip completes one rotation
+		var remainingRotation = 2 * PI - abs(rotationSinceFlip)
+		if abs(remainingRotation) <= flipStopThreshold or flipTimeRemaining <= 0:
+			flipHapenning = false
+		elif remainingRotation > 0 and remainingRotation <= PI / 2.0:
+			# this is from vfinal^2 = vi^2 - 2ax, setting vfinal = 0, isolating a, and converting to a force (but for the rotational equivalents)
+			# since remaining rotation is always positive, the sign is adjusted by opposing the current angular velocity
+			var brakingTorque = -sign(angularVelocity) * I * angularVelocity ** 2 / (2.0 * remainingRotation)
+			applyTorque(brakingTorque)
+			
+		
+		

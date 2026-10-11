@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://xnar8xyij2tq"]
+
+[ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://game/pufferfish.gd" id="1_i3yhx"]
+[ext_resource type="PackedScene" uid="uid://c4avem1un3av2" path="res://game/arrow.tscn" id="2_h5c8s"]
+
+[sub_resource type="Curve" id="Curve_lp2uy"]
+_limits = [0.0, 700.0, 0.0, 1.0]
+_data = [Vector2(0, 700), 0.0, 0.0, 0, 0, Vector2(0.71, 700), 0.0, 0.0, 0, 0, Vector2(1, 456.17972), -12.841098, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_l1rk1"]
+_limits = [0.0, 2.0, 0.0, 1.0]
+_data = [Vector2(0, 1.1685394), 0.0, 0.0, 0, 0, Vector2(1, 1.2134832), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Pufferfish" type="Node2D" unique_id=544173220 node_paths=PackedStringArray("visualPolygon", "visualRim", "arrow")]
+script = ExtResource("1_i3yhx")
+visualPolygon = NodePath("Polygon2D")
+visualRim = NodePath("Line2D")
+arrow = NodePath("Arrow")
+nodeCount = 40
+stiffnessCurve = SubResource("Curve_lp2uy")
+dampingCurve = SubResource("Curve_l1rk1")
+shrinkTime = 0.3
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=648578699]
+color = Color(0.5948784, 0.6591754, 1, 1)
+
+[node name="Line2D" type="Line2D" parent="." unique_id=227578585]
+closed = true
+width = 22.75
+default_color = Color(0.5208457, 0.4351544, 0.890625, 1)
+texture_mode = 1
+joint_mode = 2
+
+[node name="Arrow" parent="." unique_id=1637720637 instance=ExtResource("2_h5c8s")]
