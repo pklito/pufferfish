@@ -6,8 +6,8 @@ const defaultFieldSize := Vector2(1152, 600.0)
 var fieldSize
 
 
-var wallScene: PackedScene = preload("res://game/wallnew.tscn")
-var ballScene: PackedScene = preload("res://game/ball.tscn")
+const WALL_SCENE: PackedScene = preload("res://objects/wallnew.tscn")
+const BALL_SCENE: PackedScene = preload("res://objects/ball.tscn")
 
 @onready var walls: Node2D = $World/Walls
 @onready var Camera = $World/Camera
@@ -15,7 +15,7 @@ var ballScene: PackedScene = preload("res://game/ball.tscn")
 
 
 func addWall(wallPosition: Vector2, wallRotation: float, wallLength: float) -> void:
-	var wall := wallScene.instantiate() as StaticBody2D
+	var wall := WALL_SCENE.instantiate() as StaticBody2D
 	wall.position = wallPosition
 	wall.rotation = wallRotation
 	var visual = wall.get_node("MeshInstance2D")
@@ -32,7 +32,7 @@ func setupField() -> void:
 	addWall(Vector2(fieldSize.x, fieldSize.y / 2.0), PI / 2.0, fieldSize.y)
 	Camera.position = Vector2(fieldSize.x/2, fieldSize.y/2)
 	Camera.zoom = Vector2(1.0/fieldSizeMult, 1.0/fieldSizeMult)
-	var ball := ballScene.instantiate() as RigidBody2D
+	var ball := BALL_SCENE.instantiate() as RigidBody2D
 	ball.position = Vector2(fieldSize.x * 0.75, fieldSize.y / 2.0)
 	add_child(ball)
 	

@@ -38,7 +38,7 @@ var orientation : float = 0.0
 var previousOrientation : float = orientation
 var angularVelocity : float = 0.0
 
-var SOFT_BODY_NODE : PackedScene = preload("res://game/SoftBodyNode.tscn")
+var SOFT_BODY_NODE : PackedScene = preload("res://objects/pufferfish/SoftBodyNode.tscn")
 
 var listPoints := []
 var listJoints := []

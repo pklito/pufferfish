@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://xnar8xyij2tq"]
 
-[ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://game/pufferfish.gd" id="1_i3yhx"]
-[ext_resource type="PackedScene" uid="uid://c4avem1un3av2" path="res://game/arrow.tscn" id="2_h5c8s"]
+[ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://objects/pufferfish/pufferfish.gd" id="1_i3yhx"]
+[ext_resource type="Texture2D" uid="uid://babil5txx00g" path="res://assets/Basic/Default/arrow_s.png" id="2_h5c8s"]
 
 [sub_resource type="Curve" id="Curve_lp2uy"]
 _limits = [0.0, 700.0, 0.0, 1.0]
@@ -33,4 +33,5 @@ default_color = Color(0.5208457, 0.4351544, 0.890625, 1)
 texture_mode = 1
 joint_mode = 2
 
-[node name="Arrow" parent="." unique_id=1637720637 instance=ExtResource("2_h5c8s")]
+[node name="Arrow" type="Sprite2D" parent="." unique_id=1121080009]
+texture = ExtResource("2_h5c8s")

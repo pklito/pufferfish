@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://wmqllq3qg2ls"]
 
-[ext_resource type="Script" uid="uid://f22ai8kjfncw" path="res://game/game.gd" id="1_vasa2"]
-[ext_resource type="PackedScene" uid="uid://xnar8xyij2tq" path="res://game/pufferfish.tscn" id="2_vasa2"]
+[ext_resource type="Script" uid="uid://f22ai8kjfncw" path="res://scenes/game/game.gd" id="1_vasa2"]
+[ext_resource type="PackedScene" uid="uid://xnar8xyij2tq" path="res://objects/pufferfish/pufferfish.tscn" id="2_vasa2"]
 
 [node name="Game" type="Node" unique_id=434314932]
 script = ExtResource("1_vasa2")
