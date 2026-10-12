@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://xnar8xyij2tq"]
 
 [ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://objects/pufferfish/pufferfish.gd" id="1_i3yhx"]
-[ext_resource type="Texture2D" uid="uid://babil5txx00g" path="res://assets/Basic/Default/arrow_s.png" id="2_h5c8s"]
+[ext_resource type="Texture2D" uid="uid://bx36ccystj1wj" path="res://assets/Basic/Double/arrow_s.png" id="2_8uf7h"]
 
 [sub_resource type="Curve" id="Curve_7h61r"]
 _limits = [0.0, 700.0, 0.0, 1.0]
@@ -25,9 +25,11 @@ damping_curve = SubResource("Curve_0sr1o")
 shrink_time = 0.3
 
 [node name="Body" type="Polygon2D" parent="." unique_id=648578699]
+z_index = 4
 color = Color(0.5948784, 0.6591754, 1, 1)
 
 [node name="Rim" type="Line2D" parent="." unique_id=227578585]
+z_index = 5
 closed = true
 width = 22.75
 default_color = Color(0.5208457, 0.4351544, 0.890625, 1)
@@ -35,6 +37,9 @@ texture_mode = 1
 joint_mode = 2
 
 [node name="Arrow" type="Sprite2D" parent="." unique_id=1121080009]
-texture = ExtResource("2_h5c8s")
+z_index = 1
+scale = Vector2(0.522, 0.742)
+texture = ExtResource("2_8uf7h")
+offset = Vector2(0, 24)
 
 [node name="RimBallsRoot" type="Node2D" parent="." unique_id=1563577509]

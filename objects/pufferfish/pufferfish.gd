@@ -19,8 +19,8 @@ var draw_on = false
 
 @export_category("Ball config")
 # Keep this even (TODO: make a warning/throw an error if not)
-@export var rim_ball_count : int = 30	##Amount of softBodyNodes the pufferfish has
-@export var radius : float = 50		##Ball total radius, including node collision sizes
+@export var rim_ball_count : int = 30  ##Amount of softBodyNodes the pufferfish has
+@export var radius : float = 50        ##Ball total radius, including node collision sizes
 @export var rim_ball_radius: float = 10  ##Node collider radii
 @export var ball_mass : float = 10
 @export var stiffness_curve : Curve = Curve.new()
@@ -29,14 +29,15 @@ var draw_on = false
 @export var spin_torque: float = 100000
 @export var squish_force: float = 30000
 @export var spin_damping: float = 10000
-@export var shrink_speed: float = 2.2
-@export var expand_speed: float = 2.2
 
 @export_category("Shrink expand")
+@export var shrink_speed: float = 2.2
+@export var expand_speed: float = 2.2
 @export var shrink_time : float = 0.05
 @export var expand_time : float = 0.15
 @export_range(0.1,1.0,0.01) var shrink_factor : float = 0.4 
 
+@export_category("Other")
 # If the angular momentum is smaller than this, apply damping
 @export var small_l = 300 * ball_mass
 
@@ -71,6 +72,17 @@ var flip_time_remaining : float = 0
 var explosion_hapenning : bool
 var time_since_explosions : float
 
+@export var MAX_ANGULAR_MOMENTUM = 100000
+@export var max_torque = MAX_ANGULAR_MOMENTUM/0.1
+var roll_diff_threshold = 3000
+
+# Inputs
+var _acceleration_input: float = 0.0
+var _turning_input: float = 0.0
+var _scale_input: float = 0.0
+var _flipped_left: bool = false
+var _flipped_right: bool = false
+
 
 func _ready() -> void:
 	# init visuals from values
@@ -88,35 +100,37 @@ func _physics_process(delta) -> void:
 	#
 	# if frame % 10 == 0:
 	# 	print("L ", L)
-	# 
+	#
 	
-	update_visuals()
+	_get_inputs()
+	
 	update_CoM()
 	update_I()
 	previous_orientation = orientation
 	orientation = (rim_balls_list[0].position - rim_balls_list[floori(rim_ball_count/2.0)].position).angle_to(Vector2(0,1))
 	angular_velocity = (wrapf(orientation - previous_orientation, -PI, PI))/delta
 	L = angular_velocity * I
-	update_arrow()
 
 	#inputs
-	handle_shrink(delta)
-	handle_expand(delta)
-	handle_rotation(delta)
-	handle_flip(delta)
+	_handle_scale(delta)
+	_handle_turning(delta)
+	_handle_flip(delta)
 
+	_move(delta)
+
+	_update_visuals()
+
+func _move(delta):
 	# DEALING WITH MOVEMENT
 	var dir = (rim_balls_list[0].position - rim_balls_list[floori(rim_ball_count/2.0)].position).normalized()
-	if not Input.is_action_pressed("p%d_accelerate" %(player_id+1)):
-		dir = Vector2(0,0)
 	var force_angle = dir.angle_to(Vector2(0,-1))
 	var forced_points_count = 4
 	var forced_center_index = roundi((-force_angle + orientation)*rim_ball_count/(2*PI))
 	var center_rim_ball = rim_balls_list[wrapi(forced_center_index, 0, rim_ball_count)]
 	# var oppositeNode = rim_balls_list[wrapi(forcedCenterIndex + rim_ball_count/2, 0, rim_ball_count)]
-	var force_per_rimball = movement_force * dir / (forced_points_count + 1)
-	var forward_squish_force = squish_force * dir / (forced_points_count + 1)
-	var backward_squish_force = -squish_force * dir / (rim_ball_count - forced_points_count - 1)
+	var force_per_rimball = movement_force * _acceleration_input * dir / (forced_points_count + 1)
+	var forward_squish_force = squish_force * _acceleration_input * dir / (forced_points_count + 1)
+	var backward_squish_force = -squish_force * _acceleration_input * dir / (rim_ball_count - forced_points_count - 1)
 	var forward_squish_indexes := []
 	#TODO: for a squishing effect the force should be divided as follows:
 	# you have a counter force variable that you apply to all nodes.
@@ -160,6 +174,12 @@ func _physics_process(delta) -> void:
 	if abs(L) < small_l:
 		apply_torque( -L/(10*delta))
 
+func _get_inputs() -> void:
+	_acceleration_input = Input.get_action_strength("p%d_accelerate" %(player_id+1))
+	_turning_input = Input.get_axis("p%d_turn_right" %(player_id+1), "p%d_turn_left" %(player_id+1))
+	_scale_input = Input.get_axis("p%d_shrink" %(player_id+1), "p%d_expand" %(player_id+1))
+	_flipped_left = Input.is_action_just_pressed("p%d_flip_left" %(player_id+1))
+	_flipped_right = Input.is_action_just_pressed("p%d_flip_right" %(player_id+1))
 
 func _create_rim_balls() -> void:
 	# create rim balls
@@ -212,12 +232,15 @@ func set_ball_scale(s : float):
 	for i in range(joints_list.size()):
 		joints_list[i].rest_length = list_resting_dists[i] * s
 
-func update_visuals() -> void:
+func _update_visuals() -> void:
 	var points = []
-	for a in rim_balls_list:
-		points.append(a.position)
+	for ball in rim_balls_list:
+		points.append(ball.position)
 	visual_polygon.polygon = points
 	visual_rim.points = points
+	# update arrow
+	arrow.position = CoM + Vector2.from_angle(-orientation+PI/2.0) * fish_size * (radius + rim_ball_radius/2.0)
+	arrow.rotation = -orientation
 
 # for debugging which nodes are being pushed
 func _draw() -> void:
@@ -236,24 +259,15 @@ func apply_torque(tau) -> void: # Remember the more important accuracy is no net
 	for i in range(rim_ball_count):
 		rim_balls_list[i].apply_central_force(applied_force/rim_ball_count * (rim_balls_list[i].position - CoM).normalized().orthogonal())
 
-func update_arrow() -> void:
-	arrow.position = CoM
-	arrow.rotation = -orientation
-
-@export var MAX_ANGULAR_MOMENTUM = 100000
-@export var max_torque = MAX_ANGULAR_MOMENTUM/0.1
-var roll_diff_threshold = 3000
-
-func handle_rotation(delta):
-	var roll_input = Input.get_axis("p%d_turn_right" %(player_id+1), "p%d_turn_left" %(player_id+1))
+func _handle_turning(delta):
 	# if you are slower than the intended angular velocity or moving in the opposite direction
 	# also I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
 	# velocity it naturally gets bigger so I am compensating)
-	if sign(roll_input) * L < MAX_ANGULAR_MOMENTUM * fish_size and not flip_hapenning: 
-		var diff = roll_input * MAX_ANGULAR_MOMENTUM * fish_size - L # angular momentum needed to reach goal
+	if sign(_turning_input) * L < MAX_ANGULAR_MOMENTUM * fish_size and not flip_hapenning: 
+		var diff = _turning_input * MAX_ANGULAR_MOMENTUM * fish_size - L # angular momentum needed to reach goal
 		var max_torque_effective
 		if abs(diff) > roll_diff_threshold:
-			if sign(L) != roll_input:
+			if sign(L) != _turning_input:
 				max_torque_effective = 2 * max_torque
 			else:
 				max_torque_effective  = max_torque
@@ -264,25 +278,17 @@ func handle_rotation(delta):
 
 #Still needs work
 
-func handle_shrink(delta) -> void:
-	if Input.is_action_pressed("p%d_shrink" %(player_id+1)) and fish_size > min_fish_size and not explosion_hapenning:
-		var newSize = fish_size - shrink_speed * delta
-		set_ball_scale(newSize)
-		fish_size = newSize
-	pass
+func _handle_scale(delta) -> void:
+	if _scale_input == 0.0 or explosion_hapenning: return
+	var new_fish_size = clampf(fish_size + shrink_speed * _scale_input * delta, min_fish_size, max_fish_size)
+	if new_fish_size != fish_size: set_ball_scale(new_fish_size)
+	fish_size = new_fish_size
 
-func handle_expand(delta) -> void:
-	if Input.is_action_pressed("p%d_expand" %(player_id+1)) and fish_size < max_fish_size and not explosion_hapenning:
-		var newSize = fish_size + expand_speed * delta
-		set_ball_scale(newSize)
-		fish_size = newSize
-	pass
-	
-func handle_flip(delta) -> void:
+func _handle_flip(delta) -> void:
 	var flipDirection = 0.0
-	if Input.is_action_just_pressed("p%d_flip_right" %(player_id+1)) and not flip_hapenning:
+	if _flipped_left and not flip_hapenning:
 		flipDirection = -1.0
-	elif Input.is_action_just_pressed("p%d_flip_left" %(player_id+1)) and not flip_hapenning:
+	elif _flipped_right and not flip_hapenning:
 		flipDirection = 1.0
 	if flipDirection != 0:
 		# do two spins per flip (can parameterize number of flips maybe)
