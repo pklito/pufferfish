@@ -1,0 +1,171 @@
+[gd_scene format=3 uid="uid://xyp8twydab52"]
+
+[ext_resource type="PackedScene" uid="uid://xnar8xyij2tq" path="res://objects/pufferfish/pufferfish.tscn" id="1_3crmj"]
+[ext_resource type="Script" uid="uid://cftfco5mpu4xe" path="res://scenes/game/field.gd" id="1_k8gfv"]
+[ext_resource type="PackedScene" uid="uid://dswtwramqdnot" path="res://objects/ball.tscn" id="2_2owe7"]
+[ext_resource type="Script" uid="uid://b63vrgwqsx3ny" path="res://scenes/game/walls.gd" id="3_2owe7"]
+[ext_resource type="Texture2D" uid="uid://bl2pswe5yyi3u" path="res://assets/square.png" id="4_nmknx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_junl4"]
+resource_local_to_scene = true
+size = Vector2(1280.257, 85.335)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3ma8j"]
+resource_local_to_scene = true
+size = Vector2(1280.257, 85.335)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hfcn4"]
+resource_local_to_scene = true
+size = Vector2(85.335, 256.7115)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hev8f"]
+resource_local_to_scene = true
+size = Vector2(85.335, 256.7115)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uf82t"]
+resource_local_to_scene = true
+size = Vector2(85.335, 256.7115)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k8gfv"]
+resource_local_to_scene = true
+size = Vector2(85.335, 256.7115)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nmknx"]
+normal = Vector2(1, 0)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_k8gfv"]
+normal = Vector2(-1, 0)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_de1aa"]
+normal = Vector2(1, 0)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_uqaax"]
+normal = Vector2(-1, 0)
+
+[node name="Field" type="Node2D" unique_id=1309572721 node_paths=PackedStringArray("ball")]
+script = ExtResource("1_k8gfv")
+ball = NodePath("Ball")
+
+[node name="Players" type="Node2D" parent="." unique_id=1533824013]
+
+[node name="Player1" parent="Players" unique_id=544173220 instance=ExtResource("1_3crmj")]
+position = Vector2(-300, 0)
+body_color = Color(0.6787408, 0.44467187, 0.9817541, 1)
+rim_color = Color(0.029986612, 0.26724663, 1, 1)
+
+[node name="Player2" parent="Players" unique_id=1449432777 instance=ExtResource("1_3crmj")]
+position = Vector2(300, 0)
+player_id = 1
+body_color = Color(0.79577774, 0.07341159, 0, 1)
+rim_color = Color(0.3580145, 0.142539, 2.4065375e-08, 1)
+
+[node name="Ball" parent="." unique_id=1322935782 instance=ExtResource("2_2owe7")]
+
+[node name="Walls" type="Node2D" parent="." unique_id=984749471]
+script = ExtResource("3_2owe7")
+width = 1109.587
+height = 700.0
+goal_size = 186.577
+wall_width = 85.335
+
+[node name="Up" type="StaticBody2D" parent="Walls" unique_id=1783351753]
+position = Vector2(0, -392.6675)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Up" unique_id=1123268288]
+shape = SubResource("RectangleShape2D_junl4")
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Up" unique_id=2047057115]
+modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
+scale = Vector2(5.0010037, 0.33333984)
+texture = ExtResource("4_nmknx")
+
+[node name="Down" type="StaticBody2D" parent="Walls" unique_id=168638984]
+position = Vector2(0, 392.6675)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Down" unique_id=1484986769]
+shape = SubResource("RectangleShape2D_3ma8j")
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Down" unique_id=2136448685]
+modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
+scale = Vector2(5.0010037, 0.33333984)
+texture = ExtResource("4_nmknx")
+
+[node name="LeftUp" type="StaticBody2D" parent="Walls" unique_id=1540544216]
+position = Vector2(-597.461, -221.64426)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/LeftUp" unique_id=513763906]
+shape = SubResource("RectangleShape2D_hfcn4")
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/LeftUp" unique_id=1504412525]
+modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
+scale = Vector2(0.33333984, 1.0027792)
+texture = ExtResource("4_nmknx")
+
+[node name="LeftDown" type="StaticBody2D" parent="Walls" unique_id=2101660091]
+position = Vector2(-597.461, 221.64426)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/LeftDown" unique_id=344038249]
+shape = SubResource("RectangleShape2D_hev8f")
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/LeftDown" unique_id=1172376351]
+modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
+scale = Vector2(0.33333984, 1.0027792)
+texture = ExtResource("4_nmknx")
+
+[node name="RightUp" type="StaticBody2D" parent="Walls" unique_id=1932951106]
+position = Vector2(597.461, -221.64426)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightUp" unique_id=907646086]
+shape = SubResource("RectangleShape2D_uf82t")
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/RightUp" unique_id=943343555]
+modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
+scale = Vector2(0.33333984, 1.0027792)
+texture = ExtResource("4_nmknx")
+
+[node name="RightDown" type="StaticBody2D" parent="Walls" unique_id=380852208]
+position = Vector2(597.461, 221.64426)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightDown" unique_id=425351452]
+shape = SubResource("RectangleShape2D_k8gfv")
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/RightDown" unique_id=1368833923]
+modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
+scale = Vector2(0.33333984, 1.0027792)
+texture = ExtResource("4_nmknx")
+
+[node name="LeftBlocker" type="StaticBody2D" parent="Walls" unique_id=1238299317]
+position = Vector2(-640.1285, 0)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/LeftBlocker" unique_id=471511791]
+shape = SubResource("WorldBoundaryShape2D_nmknx")
+
+[node name="RightBlocker" type="StaticBody2D" parent="Walls" unique_id=18693414]
+position = Vector2(640.1285, 0)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightBlocker" unique_id=2079502811]
+shape = SubResource("WorldBoundaryShape2D_k8gfv")
+
+[node name="LeftGoal" type="Area2D" parent="Walls" unique_id=1032852543]
+position = Vector2(-682.796, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/LeftGoal" unique_id=1314376097]
+shape = SubResource("WorldBoundaryShape2D_de1aa")
+
+[node name="RightGoal" type="Area2D" parent="Walls" unique_id=140787033]
+position = Vector2(682.796, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightGoal" unique_id=1614967573]
+shape = SubResource("WorldBoundaryShape2D_uqaax")
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1748199894]
+zoom = Vector2(0.81, 0.81)
+
+[connection signal="body_entered" from="Walls/LeftGoal" to="." method="_on_left_goal_body_entered"]
+[connection signal="body_entered" from="Walls/RightGoal" to="." method="_on_right_goal_body_entered"]
