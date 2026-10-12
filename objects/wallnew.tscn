@@ -9,7 +9,6 @@ resource_local_to_scene = true
 size = Vector2(928, 90)
 
 [node name="StaticBody2D" type="StaticBody2D" unique_id=1469730178]
-collision_mask = 3
 metadata/_edit_group_ = true
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=3948902]

@@ -13,6 +13,14 @@ field_size_mult = 1.7
 
 [node name="Pufferfish" parent="World/Players" unique_id=544173220 instance=ExtResource("2_vasa2")]
 position = Vector2(80.9657, 101.04553)
+body_color = Color(0.6787408, 0.44467187, 0.9817541, 1)
+rim_color = Color(0.029986612, 0.26724663, 1, 1)
+
+[node name="Pufferfish2" parent="World/Players" unique_id=445869290 instance=ExtResource("2_vasa2")]
+position = Vector2(300.02826, 151.5205)
+player_id = 1
+body_color = Color(0.79577774, 0.07341159, 0, 1)
+rim_color = Color(0.3580145, 0.142539, 2.4065375e-08, 1)
 
 [node name="Walls" type="Node2D" parent="World" unique_id=397462627]
 

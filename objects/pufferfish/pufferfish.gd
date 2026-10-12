@@ -2,6 +2,10 @@ extends Node2D
 
 const SOFT_BODY_NODE : PackedScene = preload("res://objects/pufferfish/SoftBodyNode.tscn")
 
+@export_category("Player Info")
+@export var player_id: int = 0
+@export var body_color: Color = Color.BLUE_VIOLET
+@export var rim_color: Color = Color.BLUE
 # Debugging variables
 
 # drawing stuff (right now just the nodes that are being pushed)
@@ -69,9 +73,12 @@ var time_since_explosions : float
 
 
 func _ready() -> void:
+	# init visuals from values
 	visual_rim.width = 2 * rim_ball_radius
-	_create_rim_balls()
+	visual_polygon.color = body_color
+	visual_rim.default_color = rim_color
 
+	_create_rim_balls()
 
 # for debugging
 var frame = 0
@@ -87,7 +94,7 @@ func _physics_process(delta) -> void:
 	update_CoM()
 	update_I()
 	previous_orientation = orientation
-	orientation = (rim_balls_list[0].position - rim_balls_list[rim_ball_count/2].position).angle_to(Vector2(0,1))
+	orientation = (rim_balls_list[0].position - rim_balls_list[floori(rim_ball_count/2.0)].position).angle_to(Vector2(0,1))
 	angular_velocity = (wrapf(orientation - previous_orientation, -PI, PI))/delta
 	L = angular_velocity * I
 	update_arrow()
@@ -99,8 +106,8 @@ func _physics_process(delta) -> void:
 	handle_flip(delta)
 
 	# DEALING WITH MOVEMENT
-	var dir = (rim_balls_list[0].position - rim_balls_list[rim_ball_count/2].position).normalized()
-	if (not Input.is_action_pressed("up")):
+	var dir = (rim_balls_list[0].position - rim_balls_list[floori(rim_ball_count/2.0)].position).normalized()
+	if not Input.is_action_pressed("p%d_accelerate" %(player_id+1)):
 		dir = Vector2(0,0)
 	var force_angle = dir.angle_to(Vector2(0,-1))
 	var forced_points_count = 4
@@ -120,7 +127,7 @@ func _physics_process(delta) -> void:
 	#TODO: MAKE PUSHED POINTS A DIFFERENT COLOR FOR DEBUGGING
 	var residual_torque = 0
 	debug_force_points.clear()
-	for i in range(0, forced_points_count/2 +1):
+	for i in range(0, floori(forced_points_count/2.0) +1):
 		if i == 0:
 			forward_squish_indexes.append(wrapi(forced_center_index, 0, rim_ball_count))
 			debug_force_points.append(rim_balls_list[wrapi(forced_center_index, 0, rim_ball_count)].position)
@@ -155,6 +162,7 @@ func _physics_process(delta) -> void:
 
 
 func _create_rim_balls() -> void:
+	# create rim balls
 	for i in range(rim_ball_count):
 		var rim_ball : RigidBody2D = SOFT_BODY_NODE.instantiate()
 		rim_ball.mass = ball_mass / rim_ball_count
@@ -164,8 +172,13 @@ func _create_rim_balls() -> void:
 		for a in rim_ball.get_children():
 			a.scale = Vector2(rim_ball_radius/50.0, rim_ball_radius/50.0)	## In SoftBodyNode.tscn, the radius is 50
 	
+	# go over every unique pair of rim balls
 	for i in range(rim_balls_list.size()):
 		for j in range(i+1, rim_balls_list.size()):
+			# add make rim balls not collide
+			rim_balls_list[i].add_collision_exception_with(rim_balls_list[j])
+			rim_balls_list[j].add_collision_exception_with(rim_balls_list[i])
+			# create joint
 			var stiffness_amount = 0.5 * (rim_balls_list[i].position - rim_balls_list[j].position).length() / (radius - rim_ball_radius)
 			var joint = _create_joint(rim_balls_list[i],rim_balls_list[j], stiffness_curve.sample(stiffness_amount), damping_curve.sample(stiffness_amount))
 			rim_balls_root.add_child(joint)
@@ -232,7 +245,7 @@ func update_arrow() -> void:
 var roll_diff_threshold = 3000
 
 func handle_rotation(delta):
-	var roll_input = Input.get_axis("spin_right", "spin_left")
+	var roll_input = Input.get_axis("p%d_turn_right" %(player_id+1), "p%d_turn_left" %(player_id+1))
 	# if you are slower than the intended angular velocity or moving in the opposite direction
 	# also I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
 	# velocity it naturally gets bigger so I am compensating)
@@ -252,14 +265,14 @@ func handle_rotation(delta):
 #Still needs work
 
 func handle_shrink(delta) -> void:
-	if Input.is_action_pressed("shrink") and fish_size > min_fish_size and not explosion_hapenning:
+	if Input.is_action_pressed("p%d_shrink" %(player_id+1)) and fish_size > min_fish_size and not explosion_hapenning:
 		var newSize = fish_size - shrink_speed * delta
 		set_ball_scale(newSize)
 		fish_size = newSize
 	pass
 
 func handle_expand(delta) -> void:
-	if Input.is_action_pressed("expand") and fish_size < max_fish_size and not explosion_hapenning:
+	if Input.is_action_pressed("p%d_expand" %(player_id+1)) and fish_size < max_fish_size and not explosion_hapenning:
 		var newSize = fish_size + expand_speed * delta
 		set_ball_scale(newSize)
 		fish_size = newSize
@@ -267,9 +280,9 @@ func handle_expand(delta) -> void:
 	
 func handle_flip(delta) -> void:
 	var flipDirection = 0.0
-	if Input.is_action_just_pressed("flip right") and not flip_hapenning:
+	if Input.is_action_just_pressed("p%d_flip_right" %(player_id+1)) and not flip_hapenning:
 		flipDirection = -1.0
-	elif Input.is_action_just_pressed("flip left") and not flip_hapenning:
+	elif Input.is_action_just_pressed("p%d_flip_left" %(player_id+1)) and not flip_hapenning:
 		flipDirection = 1.0
 	if flipDirection != 0:
 		# do two spins per flip (can parameterize number of flips maybe)
