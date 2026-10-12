@@ -3,30 +3,31 @@
 [ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://objects/pufferfish/pufferfish.gd" id="1_i3yhx"]
 [ext_resource type="Texture2D" uid="uid://babil5txx00g" path="res://assets/Basic/Default/arrow_s.png" id="2_h5c8s"]
 
-[sub_resource type="Curve" id="Curve_lp2uy"]
+[sub_resource type="Curve" id="Curve_7h61r"]
 _limits = [0.0, 700.0, 0.0, 1.0]
-_data = [Vector2(0, 700), 0.0, 0.0, 0, 0, Vector2(0.71, 700), 0.0, 0.0, 0, 0, Vector2(1, 456.17972), -12.841098, 0.0, 0, 0]
+_data = [Vector2(0, 700), 0.0, 0.0, 0, 0, Vector2(0.71, 700), 0.0, 0.0, 0, 0, Vector2(1, 456), -12.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_l1rk1"]
+[sub_resource type="Curve" id="Curve_0sr1o"]
 _limits = [0.0, 2.0, 0.0, 1.0]
-_data = [Vector2(0, 1.1685394), 0.0, 0.0, 0, 0, Vector2(1, 1.2134832), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 1.17), 0.0, 0.0, 0, 0, Vector2(1, 1.213), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[node name="Pufferfish" type="Node2D" unique_id=544173220 node_paths=PackedStringArray("visualPolygon", "visualRim", "arrow")]
+[node name="Pufferfish" type="Node2D" unique_id=544173220 node_paths=PackedStringArray("visual_polygon", "visual_rim", "arrow", "rim_balls_root")]
 script = ExtResource("1_i3yhx")
-visualPolygon = NodePath("Polygon2D")
-visualRim = NodePath("Line2D")
+visual_polygon = NodePath("Body")
+visual_rim = NodePath("Rim")
 arrow = NodePath("Arrow")
-nodeCount = 40
-stiffnessCurve = SubResource("Curve_lp2uy")
-dampingCurve = SubResource("Curve_l1rk1")
-shrinkTime = 0.3
+rim_balls_root = NodePath("RimBallsRoot")
+rim_ball_count = 40
+stiffness_curve = SubResource("Curve_7h61r")
+damping_curve = SubResource("Curve_0sr1o")
+shrink_time = 0.3
 
-[node name="Polygon2D" type="Polygon2D" parent="." unique_id=648578699]
+[node name="Body" type="Polygon2D" parent="." unique_id=648578699]
 color = Color(0.5948784, 0.6591754, 1, 1)
 
-[node name="Line2D" type="Line2D" parent="." unique_id=227578585]
+[node name="Rim" type="Line2D" parent="." unique_id=227578585]
 closed = true
 width = 22.75
 default_color = Color(0.5208457, 0.4351544, 0.890625, 1)
@@ -35,3 +36,5 @@ joint_mode = 2
 
 [node name="Arrow" type="Sprite2D" parent="." unique_id=1121080009]
 texture = ExtResource("2_h5c8s")
+
+[node name="RimBallsRoot" type="Node2D" parent="." unique_id=1563577509]
