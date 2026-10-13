@@ -6,19 +6,19 @@ const SPRITE_SIZE := 256.0
 @export_range(0.1, 5000.0) var width: float = 1400.0:
 	set(value):
 		width = value
-		if Engine.is_editor_hint(): _update_sizes()
+		if Engine.is_editor_hint() and is_node_ready(): _update_sizes()
 @export_range(0.1, 4000.0) var height: float = 1000.0:
 	set(value):
 		height = value
-		if Engine.is_editor_hint(): _update_sizes()
+		if Engine.is_editor_hint() and is_node_ready(): _update_sizes()
 @export_range(0.0, 5000.0) var goal_size: float = 500.0:
 	set(value):
 		goal_size = value
-		if Engine.is_editor_hint(): _update_sizes()
+		if Engine.is_editor_hint() and is_node_ready(): _update_sizes()
 @export_range(0.1, 1000.0) var wall_width: float = 50.0:
 	set(value):
 		wall_width = value
-		if Engine.is_editor_hint(): _update_sizes()
+		if Engine.is_editor_hint() and is_node_ready(): _update_sizes()
 
 @onready var up: StaticBody2D = $Up
 @onready var down: StaticBody2D = $Down

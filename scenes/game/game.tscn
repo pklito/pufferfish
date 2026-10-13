@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" uid="uid://f22ai8kjfncw" path="res://scenes/game/game.gd" id="1_vasa2"]
 [ext_resource type="PackedScene" uid="uid://xyp8twydab52" path="res://scenes/game/field.tscn" id="2_0sr1o"]
-[ext_resource type="Script" uid="uid://cftfco5mpu4xe" path="res://scenes/game/field.gd" id="3_kelw5"]
 
 [node name="Game" type="Node" unique_id=434314932 node_paths=PackedStringArray("field")]
 script = ExtResource("1_vasa2")
 field = NodePath("Field")
 
 [node name="Field" parent="." unique_id=1309572721 instance=ExtResource("2_0sr1o")]
-script = ExtResource("3_kelw5")
+
+[connection signal="goal_scored" from="Field" to="." method="_on_field_goal_scored"]

@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://cutn3d8yg8wqy" path="res://objects/pufferfish/pufferfish.gd" id="1_i3yhx"]
 [ext_resource type="Texture2D" uid="uid://bx36ccystj1wj" path="res://assets/Basic/Double/arrow_s.png" id="2_8uf7h"]
 
-[sub_resource type="Curve" id="Curve_7h61r"]
+[sub_resource type="Curve" id="Curve_k8gfv"]
 _limits = [0.0, 700.0, 0.0, 1.0]
 _data = [Vector2(0, 700), 0.0, 0.0, 0, 0, Vector2(0.71, 700), 0.0, 0.0, 0, 0, Vector2(1, 456), -12.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_0sr1o"]
+[sub_resource type="Curve" id="Curve_de1aa"]
 _limits = [0.0, 2.0, 0.0, 1.0]
 _data = [Vector2(0, 1.17), 0.0, 0.0, 0, 0, Vector2(1, 1.213), 0.0, 0.0, 0, 0]
 point_count = 2
@@ -19,10 +19,8 @@ visual_polygon = NodePath("Body")
 visual_rim = NodePath("Rim")
 arrow = NodePath("Arrow")
 rim_balls_root = NodePath("RimBallsRoot")
-rim_ball_count = 40
-stiffness_curve = SubResource("Curve_7h61r")
-damping_curve = SubResource("Curve_0sr1o")
-shrink_time = 0.3
+_stiffness_curve = SubResource("Curve_k8gfv")
+_damping_curve = SubResource("Curve_de1aa")
 
 [node name="Body" type="Polygon2D" parent="." unique_id=648578699]
 z_index = 4
