@@ -32,7 +32,12 @@ var frame = 0
 # @export var spin_torque: float = 100000
 
 @export_category("Shrink expand")
-@export var scale_speed = 2.2
+@export var _scale_speed = 2.2
+# different for each explosion depending on the initial size
+@export var _explosion_rate: float = 100
+var _is_recovering_from_explosion: bool = false
+@export var _explosion_max_scale_addition = 0.2
+
 # @export_range(0.1,1.0,0.01) var shrink_factor : float = 0.4
 # @export var shrink_time : float = 0.05
 # @export var expand_time : float = 0.15
@@ -70,7 +75,7 @@ var _CoM_velocity = 0.0
 var _fish_scale := 1.0
 var _previous_fish_scale = _fish_scale
 var _max_fish_scale := 1.3
-var _min_fish_scale := 0.6
+var _min_fish_scale := 0.7
 
 var _I: float
 var _L = _angular_velocity * _I
@@ -79,8 +84,8 @@ var _flip_hapenning : bool = false
 var _rotation_since_flip : float = 0
 var _flip_time_remaining : float = 0
 
-var _explosion_hapenning : bool
-var _time_since_explosions : float
+var _explosion_hapenning : bool = false
+
 
 # Inputs
 var _acceleration_input: float = 0.0
@@ -88,6 +93,7 @@ var _turning_input: float = 0.0
 var _scale_input: float = 0.0
 var _flipped_left: bool = false
 var _flipped_right: bool = false
+var _exploded: bool = false
 
 
 func _ready() -> void:
@@ -120,6 +126,7 @@ func _physics_process(delta) -> void:
 	
 	_handle_turning(delta)
 	_handle_flip(delta)
+	_handle_explosion(delta)
 	update_velocity(delta)
 	_move(delta)
 	_apply_mass_changing_drag(delta)
@@ -185,6 +192,7 @@ func _get_inputs() -> void:
 	_scale_input = Input.get_axis("p%d_shrink" %(player_id+1), "p%d_expand" %(player_id+1))
 	_flipped_left = Input.is_action_just_pressed("p%d_flip_left" %(player_id+1))
 	_flipped_right = Input.is_action_just_pressed("p%d_flip_right" %(player_id+1))
+	_exploded = Input.is_action_just_pressed("p%d_explode" %(player_id+1))
 
 func _create_rim_balls() -> void:
 	# create rim balls
@@ -250,8 +258,10 @@ func update_angular_velocity(delta):
 		_angular_velocity = (wrapf(_orientation - _previous_orientation, -PI, PI))/delta
 
 func set_ball_scale(s : float):
+	_fish_scale = s
 	for i in range(_joints_list.size()):
 		_joints_list[i].rest_length = _list_resting_dists[i] * s
+		
 
 func _update_visuals() -> void:
 	var points = []
@@ -301,19 +311,38 @@ func update_velocity(delta):
 	_CoM_velocity = (_CoM - _previous_CoM)/delta
 
 func _handle_scale(delta) -> void:
-	if _scale_input == 0.0 or _explosion_hapenning: return
-	var new_fish_size = clampf(_fish_scale + scale_speed * _scale_input * delta, _min_fish_scale, _max_fish_scale)
+	if _explosion_hapenning: return
+	var new_fish_size = clampf(_fish_scale + _scale_speed * _scale_input * delta, _min_fish_scale, _max_fish_scale)
 	if new_fish_size != _fish_scale: set_ball_scale(new_fish_size)
-	_fish_scale = new_fish_size
-	
 	
 func _apply_mass_changing_drag(delta) -> void:
 	var momentum_added = _fish_mass * (_fish_scale - _previous_fish_scale) * _CoM_velocity
 	for ball in _rim_balls_list:
 		ball.apply_central_force(-momentum_added  / (delta * _drag_correction * _rim_ball_count))
-	print(momentum_added)
 		
 
+
+		
+func _handle_explosion(delta) -> void:
+	if _exploded and not _explosion_hapenning:
+		print("kaboom")
+		_explosion_hapenning = true
+	if _explosion_hapenning and not _is_recovering_from_explosion:
+		set_ball_scale(clamp(_fish_scale + _explosion_rate * delta, 0, _max_fish_scale + _explosion_max_scale_addition))
+	if _explosion_hapenning and _fish_scale >= _max_fish_scale + _explosion_max_scale_addition:
+		_is_recovering_from_explosion = true
+	if _is_recovering_from_explosion:
+		set_ball_scale(_fish_scale - _scale_speed * delta)
+		print("here")
+	if _is_recovering_from_explosion and _fish_scale <= _max_fish_scale:
+		_is_recovering_from_explosion = false
+		_explosion_hapenning = false
+		
+		
+		
+		
+	
+	
 func _handle_flip(delta) -> void:
 	var flipDirection = 0.0
 	if _flipped_left and not _flip_hapenning:
@@ -325,7 +354,6 @@ func _handle_flip(delta) -> void:
 		var desiredAngularVelocity = 4 * PI / _flip_time
 		# tau * dt = _I * (domega)
 		var tauImpulse = _I * desiredAngularVelocity / delta
-		print(tauImpulse)
 		_apply_torque(flipDirection * tauImpulse)
 		_flip_hapenning = true
 		_rotation_since_flip = 0
@@ -387,7 +415,7 @@ func force_position(pos: Vector2) -> void:
 # 		else:
 # 			scaleTween.tween_method(set_ball_scale, shrink_factor, 1.0, expand_time).set_trans(Tween.TRANS_LINEAR)
 # 		scaleTween.play()
-# 	
+
 
 #TODO: Strong force until some velocity and then only the orthogonal component affects the movement (maybe. More
 # generally, need a speed cap for the fish
@@ -406,6 +434,7 @@ func force_position(pos: Vector2) -> void:
 # seperately (remember the purpose of this is that if something prevents the player from flipping they should 
 # be able to move after again after a time roughly equal to the time it would have taken to flip
 
-#TODO: ideas: go slower when big, add brake button, play around with friction for flip feel
+#TODO: ideas: go slower when big, add brake button, play around with friction for flip feel,
+# have a maximum speed for rotation (maybe set rotation speed directly)
 
-#TODO: change the mass for larger radius, then quick expand
+#TODO: play with friction for better flip feel, implement the explosion

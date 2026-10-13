@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c5yb77l6qu3kh"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0mix2"]
-friction = 0.3
+friction = 0.2
 
 [sub_resource type="SphereMesh" id="SphereMesh_dqbel"]
 radius = 50.0

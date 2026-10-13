@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://deom7r1ej1qjk" path="res://objects/ball.gd" id="1_ct1s3"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_lp2uy"]
+rough = true
 bounce = 0.6
 
 [sub_resource type="SphereMesh" id="SphereMesh_ball"]
