@@ -8,4 +8,3 @@ func _ready() -> void:
 func _on_field_goal_scored(_team: Variant) -> void:
 	print("score yippe hooray")
 	field.new_round()
-
