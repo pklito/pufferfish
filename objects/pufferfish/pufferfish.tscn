@@ -22,6 +22,7 @@ rim_balls_root = NodePath("RimBallsRoot")
 _rim_ball_count = 40
 _stiffness_curve = SubResource("Curve_k8gfv")
 _damping_curve = SubResource("Curve_de1aa")
+_drag_correction = 1.8599999999999999
 
 [node name="Body" type="Polygon2D" parent="." unique_id=648578699]
 z_index = 4

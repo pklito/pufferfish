@@ -24,7 +24,7 @@ var frame = 0
 @export var _rim_ball_count : int = 30  ## Amount of rim balls the pufferfish has
 @export var _radius : float = 50        ## pufferfish ball total _radius, including rim balls
 @export var _rim_ball_radius: float = 10
-@export var _rim_ball_default_mass : float = 10
+@export var _fish_mass: float = 10
 @export var _stiffness_curve : Curve = Curve.new()
 @export var _damping_curve : Curve = Curve.new()
 @export var _squish_force: float = 30000
@@ -32,15 +32,16 @@ var frame = 0
 # @export var spin_torque: float = 100000
 
 @export_category("Shrink expand")
-@export var shrink_speed: float = 2.2
-@export var expand_speed: float = 2.2
+@export var scale_speed = 2.2
 # @export_range(0.1,1.0,0.01) var shrink_factor : float = 0.4
 # @export var shrink_time : float = 0.05
 # @export var expand_time : float = 0.15
 
 @export_category("Other")
 # If the angular momentum is smaller than this, apply damping
-@export var small_l = 300 * _rim_ball_default_mass
+@export var small_l = 300 * _fish_mass
+# apply this so that changing mass is not completely momentum conserving
+@export var _drag_correction : float  = 1.0
 
 @export var _flip_time : float = 0.5
 @export var _flip_stop_threshold : float = 0.05
@@ -62,12 +63,14 @@ var _list_resting_dists : Array[float] = []
 
 # Is this right? Is global position the com of the spawn position
 var _CoM : Vector2 = global_position
-# var _previous_CoM : Vector2 = _CoM
-# var CoM_velocity = 0.0
+var _previous_CoM : Vector2 = _CoM
+var _CoM_velocity = 0.0
+
 
 var _fish_scale := 1.0
+var _previous_fish_scale = _fish_scale
 var _max_fish_scale := 1.3
-var _min_fish_scale := 0.4
+var _min_fish_scale := 0.6
 
 var _I: float
 var _L = _angular_velocity * _I
@@ -97,8 +100,6 @@ func _ready() -> void:
 	_update_visuals()
 
 func _physics_process(delta) -> void:
-	print(rad_to_deg(_orientation))
-	print(_L)
 	frame += 1
 	#
 	# if frame % 10 == 0:
@@ -106,7 +107,9 @@ func _physics_process(delta) -> void:
 	#
 	
 	_get_inputs()
-	
+	_previous_fish_scale = _fish_scale
+	_handle_scale(delta)
+	update_mass()
 	update_CoM()
 	update_I()
 	_previous_orientation = _orientation
@@ -114,12 +117,13 @@ func _physics_process(delta) -> void:
 	update_angular_velocity(delta)
 	_L = _angular_velocity * _I
 
-	#inputs
-	_handle_scale(delta)
+	
 	_handle_turning(delta)
 	_handle_flip(delta)
-
+	update_velocity(delta)
 	_move(delta)
+	_apply_mass_changing_drag(delta)
+	_previous_CoM = _CoM
 
 	_update_visuals()
 
@@ -186,7 +190,7 @@ func _create_rim_balls() -> void:
 	# create rim balls
 	for i in range(_rim_ball_count):
 		var rim_ball : RigidBody2D = RIM_BALL_SCENE.instantiate()
-		rim_ball.mass = _rim_ball_default_mass / _rim_ball_count
+		rim_ball.mass = _fish_mass / _rim_ball_count
 		rim_balls_root.add_child(rim_ball)
 		_rim_balls_list.append(rim_ball)
 		rim_ball.global_position = global_position + Vector2(0,_radius - _rim_ball_radius).rotated(2 * PI * i / _rim_ball_count)
@@ -219,6 +223,12 @@ func _create_joint(a : Node2D, b:Node2D, stiffness : float = 700, damping : floa
 	joint.rest_length = joint.length
 	return joint
 
+func update_mass() -> void:
+	for ball in _rim_balls_list:
+		ball.mass = (_fish_mass / _rim_ball_count) * _fish_scale
+		
+	
+	
 func update_I() -> void:
 	#
 	#  Calculates the moment of inertia of the fish
@@ -279,21 +289,30 @@ func _handle_turning(delta):
 		var max_torque_effective
 		if abs(diff) > _roll_diff_threshold:
 			if sign(_L) != _turning_input:
-				max_torque_effective = 2 * _max_torque
+				max_torque_effective = 2 * _max_torque * _fish_scale
 			else:
-				max_torque_effective  = _max_torque
+				max_torque_effective  = _max_torque * _fish_scale
 			var torque_needed = sign(diff) * min(abs(diff / (delta)), max_torque_effective)
 			if frame % 10 == 0:
 				print("_L ", _L, " diff ", diff)
 			_apply_torque(torque_needed)
 
-#Still needs work
+func update_velocity(delta):
+	_CoM_velocity = (_CoM - _previous_CoM)/delta
 
 func _handle_scale(delta) -> void:
 	if _scale_input == 0.0 or _explosion_hapenning: return
-	var new_fish_size = clampf(_fish_scale + shrink_speed * _scale_input * delta, _min_fish_scale, _max_fish_scale)
+	var new_fish_size = clampf(_fish_scale + scale_speed * _scale_input * delta, _min_fish_scale, _max_fish_scale)
 	if new_fish_size != _fish_scale: set_ball_scale(new_fish_size)
 	_fish_scale = new_fish_size
+	
+	
+func _apply_mass_changing_drag(delta) -> void:
+	var momentum_added = _fish_mass * (_fish_scale - _previous_fish_scale) * _CoM_velocity
+	for ball in _rim_balls_list:
+		ball.apply_central_force(-momentum_added  / (delta * _drag_correction * _rim_ball_count))
+	print(momentum_added)
+		
 
 func _handle_flip(delta) -> void:
 	var flipDirection = 0.0
@@ -387,6 +406,6 @@ func force_position(pos: Vector2) -> void:
 # seperately (remember the purpose of this is that if something prevents the player from flipping they should 
 # be able to move after again after a time roughly equal to the time it would have taken to flip
 
-#TODO: ideas: go slower when big, add brake button, 
+#TODO: ideas: go slower when big, add brake button, play around with friction for flip feel
 
-#TODO: set rotation, then mass, then quick expand
+#TODO: change the mass for larger radius, then quick expand
