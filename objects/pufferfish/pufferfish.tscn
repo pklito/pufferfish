@@ -19,6 +19,7 @@ visual_polygon = NodePath("Body")
 visual_rim = NodePath("Rim")
 arrow = NodePath("Arrow")
 rim_balls_root = NodePath("RimBallsRoot")
+_rim_ball_count = 40
 _stiffness_curve = SubResource("Curve_k8gfv")
 _damping_curve = SubResource("Curve_de1aa")
 

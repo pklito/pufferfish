@@ -21,4 +21,3 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 func force_position(pos: Vector2) -> void:
 	_move_pos = pos
 	_queue_move = true
-

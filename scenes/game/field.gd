@@ -20,9 +20,9 @@ func _ready() -> void:
 func new_round() -> void:
 	_ball.force_position(_ball_starting_pos)
 	p1.force_position(Vector2(-_player_starting_distance, 0.0))
-	p1.set_orientation(0.0)
+	p1.set_orientation(90)
 	p2.force_position(Vector2(_player_starting_distance, 0.0))
-	p2.set_orientation(PI)
+	p2.set_orientation(-90)
 
 func setup() -> void:
 	new_round()

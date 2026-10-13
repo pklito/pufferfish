@@ -49,8 +49,11 @@ var frame = 0
 @export var _max_torque = _max_angular_momentum/0.1
 var _roll_diff_threshold = 3000
 
+var _reference_ball : int = 0
+var _dir : Vector2 = Vector2(0.0, 0.0)
 var _orientation : float = 0.0
 var _previous_orientation : float = _orientation
+var _rotation_just_set = false
 var _angular_velocity : float = 0.0
 
 var _rim_balls_list : Array[RigidBody2D] = []
@@ -94,6 +97,8 @@ func _ready() -> void:
 	_update_visuals()
 
 func _physics_process(delta) -> void:
+	print(rad_to_deg(_orientation))
+	print(_L)
 	frame += 1
 	#
 	# if frame % 10 == 0:
@@ -105,8 +110,8 @@ func _physics_process(delta) -> void:
 	update_CoM()
 	update_I()
 	_previous_orientation = _orientation
-	_orientation = (_rim_balls_list[0].position - _rim_balls_list[floori(_rim_ball_count/2.0)].position).angle_to(Vector2(0,1))
-	_angular_velocity = (wrapf(_orientation - _previous_orientation, -PI, PI))/delta
+	update_direction_and_orientation()
+	update_angular_velocity(delta)
 	_L = _angular_velocity * _I
 
 	#inputs
@@ -120,15 +125,13 @@ func _physics_process(delta) -> void:
 
 func _move(delta):
 	# DEALING WITH MOVEMENT
-	var dir = (_rim_balls_list[0].position - _rim_balls_list[floori(_rim_ball_count/2.0)].position).normalized()
-	var force_angle = dir.angle_to(Vector2(0,-1))
 	var forced_points_count = 4
-	var forced_center_index = roundi((-force_angle + _orientation)*_rim_ball_count/(2*PI))
+	var forced_center_index = (_reference_ball + _rim_ball_count/2) % _rim_ball_count
 	var center_rim_ball = _rim_balls_list[wrapi(forced_center_index, 0, _rim_ball_count)]
 	# var oppositeNode = _rim_balls_list[wrapi(forcedCenterIndex + _rim_ball_count/2, 0, _rim_ball_count)]
-	var force_per_rimball = _movement_force * _acceleration_input * dir / (forced_points_count + 1)
-	var forward_squish_force = _squish_force * _acceleration_input * dir / (forced_points_count + 1)
-	var backward_squish_force = -_squish_force * _acceleration_input * dir / (_rim_ball_count - forced_points_count - 1)
+	var force_per_rimball = _movement_force * _acceleration_input * _dir / (forced_points_count + 1)
+	var forward_squish_force = _squish_force * _acceleration_input * _dir / (forced_points_count + 1)
+	var backward_squish_force = -_squish_force * _acceleration_input * _dir / (_rim_ball_count - forced_points_count - 1)
 	var forward_squish_indexes := []
 	#TODO: for a squishing effect the force should be divided as follows:
 	# you have a counter force variable that you apply to all nodes.
@@ -224,7 +227,17 @@ func update_I() -> void:
 	for ball in _rim_balls_list:
 		inertia += ball.mass * (ball.position - _CoM).length()**2
 	_I = inertia
-
+	
+func update_direction_and_orientation() -> void:
+	_dir = (_rim_balls_list[_reference_ball].position - 
+	_rim_balls_list[(_reference_ball + _rim_ball_count/2) % _rim_ball_count].position).normalized()
+	_orientation = _dir.angle_to(Vector2(0,1))
+	
+func update_angular_velocity(delta):
+	if _rotation_just_set:
+		_rotation_just_set = false
+	else:
+		_angular_velocity = (wrapf(_orientation - _previous_orientation, -PI, PI))/delta
 
 func set_ball_scale(s : float):
 	for i in range(_joints_list.size()):
@@ -318,10 +331,23 @@ func _reset_attributes() -> void:
 	#TODO: reset default values
 	pass
 
-## Set pufferfish _orientation to given radian
+## Set pufferfish _orientation in degrees
 func set_orientation(r: float) -> void:
-	#TODO: do
-	pass
+	var r_radian = deg_to_rad(r)
+	var closest_ball = 0
+	var min_angle_distnace = PI
+	for i in range(_rim_ball_count):
+		var angle = (_rim_balls_list[i].position - 
+		_rim_balls_list[floori(i + _rim_ball_count/2.0) % _rim_ball_count].position).angle_to(Vector2(0,1))
+		var angle_distance = abs(angle - r_radian)
+		if angle_distance < min_angle_distnace:
+			closest_ball = i
+			min_angle_distnace = angle_distance
+			
+	# this variable is used so that we don't accidentally calculate a huge angular momentum (which would result in a torque)
+	_rotation_just_set = true
+	_reference_ball = closest_ball
+	
 
 ## Teleport pufferfish to given position and reset to default
 func force_position(pos: Vector2) -> void:
@@ -362,3 +388,5 @@ func force_position(pos: Vector2) -> void:
 # be able to move after again after a time roughly equal to the time it would have taken to flip
 
 #TODO: ideas: go slower when big, add brake button, 
+
+#TODO: set rotation, then mass, then quick expand
