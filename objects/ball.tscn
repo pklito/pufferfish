@@ -1,14 +1,11 @@
 [gd_scene format=3 uid="uid://dswtwramqdnot"]
 
 [ext_resource type="Script" uid="uid://deom7r1ej1qjk" path="res://objects/ball.gd" id="1_ct1s3"]
+[ext_resource type="Texture2D" uid="uid://duf0p6u78eymk" path="res://assets/ball.png" id="2_n16w4"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_lp2uy"]
 rough = true
 bounce = 0.6
-
-[sub_resource type="SphereMesh" id="SphereMesh_ball"]
-radius = 20.0
-height = 40.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ball"]
 radius = 20.0
@@ -21,8 +18,9 @@ mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_lp2uy")
 script = ExtResource("1_ct1s3")
 
-[node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=158262459]
-mesh = SubResource("SphereMesh_ball")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1054653274]
 shape = SubResource("CircleShape2D_ball")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1914827990]
+scale = Vector2(0.078, 0.078)
+texture = ExtResource("2_n16w4")

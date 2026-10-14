@@ -1,31 +1,6 @@
 [gd_scene format=3 uid="uid://s7ce8m61slqg"]
 
 [ext_resource type="Script" uid="uid://b63vrgwqsx3ny" path="res://scenes/game/map.gd" id="1_fodlk"]
-[ext_resource type="Texture2D" uid="uid://bl2pswe5yyi3u" path="res://assets/square.png" id="2_043wi"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_junl4"]
-resource_local_to_scene = true
-size = Vector2(1850.164, 90)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3ma8j"]
-resource_local_to_scene = true
-size = Vector2(1850.164, 90)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hfcn4"]
-resource_local_to_scene = true
-size = Vector2(90, 312.717)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hev8f"]
-resource_local_to_scene = true
-size = Vector2(90, 312.717)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_uf82t"]
-resource_local_to_scene = true
-size = Vector2(90, 312.717)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_k8gfv"]
-resource_local_to_scene = true
-size = Vector2(90, 312.717)
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nmknx"]
 normal = Vector2(1, 0)
@@ -39,105 +14,57 @@ normal = Vector2(1, 0)
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_uqaax"]
 normal = Vector2(-1, 0)
 
-[node name="Walls" type="Node2D" unique_id=323573442]
+[node name="Map" type="Node2D" unique_id=323573442]
 script = ExtResource("1_fodlk")
-width = 1670.164
-height = 875.434
-goal_size = 250.0
-wall_width = 90.0
 
-[node name="Up" type="StaticBody2D" parent="." unique_id=1141837621]
-position = Vector2(0, -482.717)
+[node name="UpperWall" type="StaticBody2D" parent="." unique_id=2054824166]
+collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Up" unique_id=626398919]
-shape = SubResource("RectangleShape2D_junl4")
+[node name="Polygon2D" type="Polygon2D" parent="UpperWall" unique_id=1693255470]
+polygon = PackedVector2Array(629.2893, -500, 700, -429.2893, 700, -250, 750, -250, 750, -550, -750, -550, -750, -250, -700, -250, -700, -429.2893, -629.2893, -500)
 
-[node name="Sprite2D" type="Sprite2D" parent="Up" unique_id=1814032451]
-modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
-scale = Vector2(7.227203, 0.3515625)
-texture = ExtResource("2_043wi")
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="UpperWall" unique_id=214094127]
+polygon = PackedVector2Array(629.2893, -500, 700, -429.2893, 700, -250, 750, -250, 750, -550, -750, -550, -750, -250, -700, -250, -700, -429.2893, -629.2893, -500)
 
-[node name="Down" type="StaticBody2D" parent="." unique_id=749455582]
-position = Vector2(0, 482.717)
+[node name="LowerWall" type="StaticBody2D" parent="." unique_id=1941056463]
+collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Down" unique_id=1444431293]
-shape = SubResource("RectangleShape2D_3ma8j")
+[node name="Polygon2D" type="Polygon2D" parent="LowerWall" unique_id=620415739]
+polygon = PackedVector2Array(629.2893, 500, 700, 429.2893, 700, 250, 750, 250, 750, 550, -750, 550, -750, 250, -700, 250, -700, 429.2893, -629.2893, 500)
 
-[node name="Sprite2D" type="Sprite2D" parent="Down" unique_id=1686377065]
-modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
-scale = Vector2(7.227203, 0.3515625)
-texture = ExtResource("2_043wi")
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="LowerWall" unique_id=89121720]
+polygon = PackedVector2Array(629.2893, 500, 700, 429.2893, 700, 250, 750, 250, 750, 550, -750, 550, -750, 250, -700, 250, -700, 429.2893, -629.2893, 500)
 
-[node name="LeftUp" type="StaticBody2D" parent="." unique_id=1391758482]
-position = Vector2(-880.082, -281.3585)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftUp" unique_id=895867695]
-shape = SubResource("RectangleShape2D_hfcn4")
-
-[node name="Sprite2D" type="Sprite2D" parent="LeftUp" unique_id=474528551]
-modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
-scale = Vector2(0.3515625, 1.2215508)
-texture = ExtResource("2_043wi")
-
-[node name="LeftDown" type="StaticBody2D" parent="." unique_id=632459610]
-position = Vector2(-880.082, 281.3585)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftDown" unique_id=930060445]
-shape = SubResource("RectangleShape2D_hev8f")
-
-[node name="Sprite2D" type="Sprite2D" parent="LeftDown" unique_id=338217495]
-modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
-scale = Vector2(0.3515625, 1.2215508)
-texture = ExtResource("2_043wi")
-
-[node name="RightUp" type="StaticBody2D" parent="." unique_id=1405340283]
-position = Vector2(880.082, -281.3585)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RightUp" unique_id=987927709]
-shape = SubResource("RectangleShape2D_uf82t")
-
-[node name="Sprite2D" type="Sprite2D" parent="RightUp" unique_id=913475733]
-modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
-scale = Vector2(0.3515625, 1.2215508)
-texture = ExtResource("2_043wi")
-
-[node name="RightDown" type="StaticBody2D" parent="." unique_id=754419366]
-position = Vector2(880.082, 281.3585)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RightDown" unique_id=1936762129]
-shape = SubResource("RectangleShape2D_k8gfv")
-
-[node name="Sprite2D" type="Sprite2D" parent="RightDown" unique_id=98684094]
-modulate = Color(0.18381459, 0.18080139, 0.19284678, 1)
-scale = Vector2(0.3515625, 1.2215508)
-texture = ExtResource("2_043wi")
+[node name="BallMarker" type="Marker2D" parent="." unique_id=1567638634]
 
 [node name="LeftBlocker" type="StaticBody2D" parent="." unique_id=1037600418]
-position = Vector2(-925.082, 0)
+position = Vector2(-750, 0)
 collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LeftBlocker" unique_id=1259533272]
 shape = SubResource("WorldBoundaryShape2D_nmknx")
 
 [node name="RightBlocker" type="StaticBody2D" parent="." unique_id=89855510]
-position = Vector2(925.082, 0)
+position = Vector2(750, 0)
 collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightBlocker" unique_id=1094179713]
 shape = SubResource("WorldBoundaryShape2D_k8gfv")
 
 [node name="LeftGoal" type="Area2D" parent="." unique_id=441037269]
-position = Vector2(-970.082, 0)
+position = Vector2(-775, 0)
 collision_layer = 0
 collision_mask = 2
+monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LeftGoal" unique_id=992268362]
 shape = SubResource("WorldBoundaryShape2D_de1aa")
 
 [node name="RightGoal" type="Area2D" parent="." unique_id=1003982549]
-position = Vector2(970.082, 0)
+position = Vector2(775, 0)
 collision_layer = 0
 collision_mask = 2
+monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightGoal" unique_id=1793264373]
 shape = SubResource("WorldBoundaryShape2D_uqaax")

@@ -3,6 +3,7 @@ extends Node
 @export var field: Field
 
 func _ready() -> void:
+	field.goal_scored.connect(_on_field_goal_scored)
 	field.setup()
 
 func _on_field_goal_scored(_team: Variant) -> void:

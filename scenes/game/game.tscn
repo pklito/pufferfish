@@ -8,5 +8,3 @@ script = ExtResource("1_vasa2")
 field = NodePath("Field")
 
 [node name="Field" parent="." unique_id=1309572721 instance=ExtResource("2_0sr1o")]
-
-[connection signal="goal_scored" from="Field" to="." method="_on_field_goal_scored"]
