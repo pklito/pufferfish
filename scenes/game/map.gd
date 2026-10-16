@@ -93,6 +93,5 @@ func get_ball_starting_position() -> Vector2:
 ## and r the orientation in radians, or an empty array if missing data
 func get_player_starting_positions(left_team: bool, team_count: int) -> Array[Vector3]:
 	var offset = 300.0
-	if left_team: return [Vector3(-offset, 0.0, 90.0)]
-	return [Vector3(offset, 0.0, -90.0)]
-
+	if left_team: return [Vector3(-offset, 0.0, 90)]
+	return [Vector3(offset, 0.0, -90)]

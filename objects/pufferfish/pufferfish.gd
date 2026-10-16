@@ -140,17 +140,17 @@ func _move(delta):
 	var forced_center_index = (_reference_ball + _rim_ball_count/2) % _rim_ball_count
 	var center_rim_ball = _rim_balls_list[wrapi(forced_center_index, 0, _rim_ball_count)]
 	# var oppositeNode = _rim_balls_list[wrapi(forcedCenterIndex + _rim_ball_count/2, 0, _rim_ball_count)]
+	
+	# trying this out: apply twice the force if the dot product between force and movement is negative
+	# for faster changes of direction
 	var force_per_rimball = _movement_force * _acceleration_input * _dir / (forced_points_count + 1)
+	var force_velocity_dotted = force_per_rimball.normalized().dot(_CoM_velocity.normalized())
+	if force_velocity_dotted < 0:
+		force_per_rimball += force_per_rimball * abs(force_velocity_dotted)
+		
 	var forward_squish_force = _squish_force * _acceleration_input * _dir / (forced_points_count + 1)
 	var backward_squish_force = -_squish_force * _acceleration_input * _dir / (_rim_ball_count - forced_points_count - 1)
 	var forward_squish_indexes := []
-	#TODO: for a squishing effect the force should be divided as follows:
-	# you have a counter force variable that you apply to all nodes.
-	# _squish_force/( forced Points + 1) forwards
-	# _squish_force/ (NodeCount - forcedPoints - 1) backwards
-	# when doing the forward forces apply the squish force and add the indeces to an index list
-	# in another loop apply all the squishforces for the rest
-	#TODO: MAKE PUSHED POINTS A DIFFERENT COLOR FOR DEBUGGING
 	var residual_torque = 0
 	debug_force_points.clear()
 	for i in range(0, floori(forced_points_count/2.0) +1):
