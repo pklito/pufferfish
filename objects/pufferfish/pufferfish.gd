@@ -375,32 +375,42 @@ func _handle_flip(delta) -> void:
 
 ## Cancel all forces and reset values
 func _reset_attributes() -> void:
-	#TODO: reset default values
+	_I = 0
+	_L = 0
+	_CoM_velocity = 0
+	_angular_velocity = 0
+	set_ball_scale(1)
 	pass
 
-## Set pufferfish _orientation in degrees
-func set_orientation(r: float) -> void:
+## Set pufferfish _orientation in degrees. Set arbitrary = true if when called, the fish is in an arbitrary rotation
+func set_orientation(r: float, arbitrary : bool = false) -> void:
 	var r_radian = deg_to_rad(r)
 	var closest_ball = 0
 	var min_angle_distnace = PI
-	for i in range(_rim_ball_count):
-		var angle = (_rim_balls_list[i].position - 
-		_rim_balls_list[floori(i + _rim_ball_count/2.0) % _rim_ball_count].position).angle_to(Vector2(0,1))
-		var angle_distance = abs(angle - r_radian)
-		if angle_distance < min_angle_distnace:
-			closest_ball = i
-			min_angle_distnace = angle_distance
+	if arbitrary:
+		for i in range(_rim_ball_count):
+			var angle = (_rim_balls_list[i].position - 
+			_rim_balls_list[floori(i + _rim_ball_count/2.0) % _rim_ball_count].position).angle_to(Vector2(0,1))
+			var angle_distance = abs(angle - r_radian)
+			if angle_distance < min_angle_distnace:
+				closest_ball = i
+				min_angle_distnace = angle_distance
+	else:
+		closest_ball = roundi(-r_radian/(2*PI) * _rim_ball_count)
 			
 	# this variable is used so that we don't accidentally calculate a huge angular momentum (which would result in a torque)
 	_rotation_just_set = true
 	_reference_ball = closest_ball
-	
+
 
 ## Teleport pufferfish to given position and reset to default
 func force_position(pos: Vector2) -> void:
 	_reset_attributes()
-	#TODO: do
-	pass
+	for i in range(len(_rim_balls_list)):
+		var rim_ball_position = pos + Vector2(0,_radius - _rim_ball_radius).rotated(2 * PI * i / _rim_ball_count)
+		_rim_balls_list[i].force_position(rim_ball_position) 
+	
+	
 
 
 # var scaleTween : Tween
@@ -437,4 +447,6 @@ func force_position(pos: Vector2) -> void:
 #TODO: ideas: go slower when big, add brake button, play around with friction for flip feel,
 # have a maximum speed for rotation (maybe set rotation speed directly)
 
-#TODO: play with friction for better flip feel, implement the explosion
+#TODO: phyisics optimizations: friction to adjust flip feel (pretty good rn)
+
+#TODO: make movement smoother by amplifying the turning component? Dependent on velocity? Check examples online

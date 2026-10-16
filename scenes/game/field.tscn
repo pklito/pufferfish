@@ -22,7 +22,7 @@ body_color = Color(0.79577774, 0.07341159, 0, 1)
 rim_color = Color(0.3580145, 0.142539, 2.4065375e-08, 1)
 
 [node name="Ball" parent="." unique_id=1322935782 instance=ExtResource("2_2owe7")]
-radius = 50.0
+radius = 35.0
 
 [node name="Map" parent="." unique_id=323573442 instance=ExtResource("4_nmknx")]
 width = 1561.051

@@ -11,6 +11,8 @@ const PUFFERFISH_SCENE: PackedScene = preload("res://objects/pufferfish/pufferfi
 @onready var p1 = $Players/Player1
 @onready var p2 = $Players/Player2
 
+var _reset_in_progress : bool = false
+
 
 
 # Called when the node enters the scene tree for the first time.
