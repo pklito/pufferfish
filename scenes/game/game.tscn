@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://f22ai8kjfncw" path="res://scenes/game/game.gd" id="1_vasa2"]
 [ext_resource type="PackedScene" uid="uid://xyp8twydab52" path="res://scenes/game/field.tscn" id="2_0sr1o"]
 
-[node name="Game" type="Node" unique_id=434314932 node_paths=PackedStringArray("field")]
+[node name="Game" type="Node" unique_id=434314932]
 script = ExtResource("1_vasa2")
-field = NodePath("Field")
+_enable_overrides = true
 
 [node name="Field" parent="." unique_id=1309572721 instance=ExtResource("2_0sr1o")]

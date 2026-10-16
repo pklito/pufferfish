@@ -190,7 +190,7 @@ p1_explode={
 "script": null
 )]
 }
-p2_turn_right={
+p0_turn_right={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
 "resource_local_to_scene": false,
@@ -211,7 +211,7 @@ p2_turn_right={
 "script": null
 )]
 }
-p2_turn_left={
+p0_turn_left={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
 "resource_local_to_scene": false,
@@ -232,7 +232,7 @@ p2_turn_left={
 "script": null
 )]
 }
-p2_shrink={
+p0_shrink={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
 "resource_local_to_scene": false,
@@ -253,7 +253,7 @@ p2_shrink={
 "script": null
 )]
 }
-p2_expand={
+p0_expand={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
 "resource_local_to_scene": false,
@@ -274,7 +274,7 @@ p2_expand={
 "script": null
 )]
 }
-p2_flip_right={
+p0_flip_right={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
 "resource_local_to_scene": false,
@@ -295,7 +295,7 @@ p2_flip_right={
 "script": null
 )]
 }
-p2_flip_left={
+p0_flip_left={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
 "resource_local_to_scene": false,
@@ -316,7 +316,7 @@ p2_flip_left={
 "script": null
 )]
 }
-p2_accelerate={
+p0_accelerate={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
 "resource_local_to_scene": false,
@@ -337,7 +337,7 @@ p2_accelerate={
 "script": null
 )]
 }
-p2_explode={
+p0_explode={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
 "resource_local_to_scene": false,

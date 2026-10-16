@@ -24,26 +24,46 @@ signal right_scored
 	set(value):
 		corner_width = value
 		if Engine.is_editor_hint() and is_node_ready(): _update_sizes()
-@export_range(0.02, PI/2.0-0.02) var corner_angle: float = PI/4.0:
+@export_range(0.02, 89.08, 0.001, "radians_as_degrees") var corner_angle: float = PI/4.0:
 	set(value):
 		corner_angle = value
 		if Engine.is_editor_hint() and is_node_ready(): _update_sizes()
 
-@onready var _upper_wall: StaticBody2D = $UpperWall
-@onready var _lower_wall: StaticBody2D = $LowerWall
-
-@onready var left_blocker: StaticBody2D = $LeftBlocker
-@onready var right_blocker: StaticBody2D = $RightBlocker
 @onready var left_goal: Area2D = $LeftGoal
 @onready var right_goal: Area2D = $RightGoal
 
 @onready var _ball_marker: Marker2D = $BallMarker
+@onready var _spawn_points_root: Node2D = $SpawnPoints
 
+@onready var _upper_wall: StaticBody2D = $UpperWall
+@onready var _lower_wall: StaticBody2D = $LowerWall
+@onready var left_blocker: StaticBody2D = $LeftBlocker
+@onready var right_blocker: StaticBody2D = $RightBlocker
+
+# arrays of spawn points for each side
+var _spawn_points_left: Array[Vector3] = []
+var _spawn_points_right: Array[Vector3] = []
 
 func _ready() -> void:
-	left_goal.body_entered.connect(_on_left_goal_body_enter)
+	# connect signals left_goal.body_entered.connect(_on_left_goal_body_enter)
 	right_goal.body_entered.connect(_on_right_goal_body_enter)
+
+	# get player spawn points from markers
+	_generate_spawn_points_array()
+
+	# update wall sizes
 	_update_sizes()
+
+func _generate_spawn_points_array() -> void:
+	_spawn_points_left = []
+	_spawn_points_right = []
+	for marker in _spawn_points_root.get_children():
+		# add spawn point to left side
+		var p = marker.position
+		_spawn_points_left.append(Vector3(p.x, p.y, marker.rotation))
+		# add same point mirrored around the ball to right side
+		var b = _ball_marker.position
+		_spawn_points_right.append(Vector3(2.0*b.x - p.x, 2.0*b.y - p.y, wrapf(marker.rotation + PI, -PI, PI)))
 
 func _update_wall_size(wall: StaticBody2D, up: bool) -> void:
 	var flip = -1.0 if up else 1.0
@@ -87,11 +107,10 @@ func _on_right_goal_body_enter(body: RigidBody2D) -> void:
 func get_ball_starting_position() -> Vector2:
 	return _ball_marker.position
 
-## Args: [param left_team] true if getting positions for left team, [param team_count] amount
-## of players per team.[br]
+## Args: [param left_team] true if getting positions for left team.[br]
 ## Returns: [Array] of [Vector3] per player with (x, y, r) where x, y is the position
-## and r the orientation in radians, or an empty array if missing data
-func get_player_starting_positions(left_team: bool, team_count: int) -> Array[Vector3]:
-	var offset = 300.0
-	if left_team: return [Vector3(-offset, 0.0, 90)]
-	return [Vector3(offset, 0.0, -90)]
+## and r the orientation in radians.
+func get_player_starting_positions(team: Game.Team) -> Array[Vector3]:
+	if team == Game.Team.LEFT: return _spawn_points_left
+	else: return _spawn_points_right
+

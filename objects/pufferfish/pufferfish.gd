@@ -2,21 +2,30 @@ class_name Pufferfish extends Node2D
 
 const RIM_BALL_SCENE : PackedScene = preload("res://objects/pufferfish/SoftBodyNode.tscn")
 
-# debug drawing stuff (right now just the nodes that are being pushed)
-var draw_on = false
-var debug_force_points := []
-var frame = 0
+class PlayerSettings:
+	var id: int = 0
+	var team: Game.Team = Game.Team.LEFT
+	var name: String = "Fish"
 
-@export_category("Connections")
-@export var visual_polygon : Polygon2D
-@export var visual_rim : Line2D
-@export var arrow : Sprite2D
-@export var rim_balls_root : Node2D
+	var body_color_left: Color = Color.BLUE_VIOLET
+	var rim_color_left: Color = Color.BLUE
+	var body_color_right: Color = Color.RED
+	var rim_color_right: Color = Color.DARK_RED
 
-@export_category("Player Info")
-@export var player_id: int = 0
-@export var body_color: Color = Color.BLUE_VIOLET
-@export var rim_color: Color = Color.BLUE
+
+@export_category("Debug options")
+# draw forces of balls
+@export var _draw_on: bool = false
+var _debug_force_points := []
+var _frame = 0
+
+var settings: PlayerSettings = PlayerSettings.new()
+
+@onready var _visual_polygon : Polygon2D = $Body
+@onready var _visual_rim : Line2D = $Rim
+@onready var _arrow : Sprite2D = $Arrow
+@onready var _rim_balls_root : Node2D = $RimBallsRoot
+
 
 @export_category("Ball config")
 # Keep this even (TODO: make a warning/throw an error if not)
@@ -97,18 +106,13 @@ var _exploded: bool = false
 
 
 func _ready() -> void:
-	# init visuals from values
-	visual_rim.width = 2 * _rim_ball_radius
-	visual_polygon.color = body_color
-	visual_rim.default_color = rim_color
-
+	_init_visuals_settings()
 	_create_rim_balls()
-	_update_visuals()
 
 func _physics_process(delta) -> void:
-	frame += 1
+	_frame += 1
 	#
-	# if frame % 10 == 0:
+	# if _frame % 10 == 0:
 	# 	print("_L ", _L)
 	#
 	
@@ -137,7 +141,7 @@ func _physics_process(delta) -> void:
 func _move(delta):
 	# DEALING WITH MOVEMENT
 	var forced_points_count = 4
-	var forced_center_index = (_reference_ball + _rim_ball_count/2) % _rim_ball_count
+	var forced_center_index = (_reference_ball + floori(_rim_ball_count/2.0)) % _rim_ball_count
 	var center_rim_ball = _rim_balls_list[wrapi(forced_center_index, 0, _rim_ball_count)]
 	# var oppositeNode = _rim_balls_list[wrapi(forcedCenterIndex + _rim_ball_count/2, 0, _rim_ball_count)]
 	
@@ -152,11 +156,11 @@ func _move(delta):
 	var backward_squish_force = -_squish_force * _acceleration_input * _dir / (_rim_ball_count - forced_points_count - 1)
 	var forward_squish_indexes := []
 	var residual_torque = 0
-	debug_force_points.clear()
+	_debug_force_points.clear()
 	for i in range(0, floori(forced_points_count/2.0) +1):
 		if i == 0:
 			forward_squish_indexes.append(wrapi(forced_center_index, 0, _rim_ball_count))
-			debug_force_points.append(_rim_balls_list[wrapi(forced_center_index, 0, _rim_ball_count)].position)
+			_debug_force_points.append(_rim_balls_list[wrapi(forced_center_index, 0, _rim_ball_count)].position)
 			_rim_balls_list[wrapi(forced_center_index, 0, _rim_ball_count)].apply_central_force(force_per_rimball)
 			center_rim_ball.apply_central_force(forward_squish_force)
 			residual_torque += (center_rim_ball.position - _CoM).cross(forward_squish_force)
@@ -165,8 +169,8 @@ func _move(delta):
 			var left_rimball = _rim_balls_list[wrapi(forced_center_index - i, 0, _rim_ball_count)]
 			forward_squish_indexes.append(wrapi(forced_center_index + i, 0, _rim_ball_count))
 			forward_squish_indexes.append(wrapi(forced_center_index - i, 0, _rim_ball_count))
-			debug_force_points.append(right_rimball.position)
-			debug_force_points.append(left_rimball.position)
+			_debug_force_points.append(right_rimball.position)
+			_debug_force_points.append(left_rimball.position)
 			right_rimball.apply_central_force(force_per_rimball)
 			right_rimball.apply_central_force(forward_squish_force)
 			residual_torque += (right_rimball.position - _CoM).cross(force_per_rimball)
@@ -187,19 +191,29 @@ func _move(delta):
 		_apply_torque( -_L/(10*delta))
 
 func _get_inputs() -> void:
-	_acceleration_input = Input.get_action_strength("p%d_accelerate" %(player_id+1))
-	_turning_input = Input.get_axis("p%d_turn_right" %(player_id+1), "p%d_turn_left" %(player_id+1))
-	_scale_input = Input.get_axis("p%d_shrink" %(player_id+1), "p%d_expand" %(player_id+1))
-	_flipped_left = Input.is_action_just_pressed("p%d_flip_left" %(player_id+1))
-	_flipped_right = Input.is_action_just_pressed("p%d_flip_right" %(player_id+1))
-	_exploded = Input.is_action_just_pressed("p%d_explode" %(player_id+1))
+	_acceleration_input = Input.get_action_strength("p%d_accelerate" %(settings.id))
+	_turning_input = Input.get_axis("p%d_turn_right" %(settings.id), "p%d_turn_left" %(settings.id))
+	_scale_input = Input.get_axis("p%d_shrink" %(settings.id), "p%d_expand" %(settings.id))
+	_flipped_left = Input.is_action_just_pressed("p%d_flip_left" %(settings.id))
+	_flipped_right = Input.is_action_just_pressed("p%d_flip_right" %(settings.id))
+	_exploded = Input.is_action_just_pressed("p%d_explode" %(settings.id))
+
+func _init_visuals_settings() -> void:
+	# init visuals from values
+	_visual_rim.width = 2 * _rim_ball_radius
+	if settings.team == Game.Team.LEFT:
+		_visual_polygon.color = settings.body_color_left
+		_visual_rim.default_color = settings.rim_color_left
+	else:
+		_visual_polygon.color = settings.body_color_right
+		_visual_rim.default_color = settings.rim_color_right
 
 func _create_rim_balls() -> void:
 	# create rim balls
 	for i in range(_rim_ball_count):
 		var rim_ball : RigidBody2D = RIM_BALL_SCENE.instantiate()
 		rim_ball.mass = _fish_mass / _rim_ball_count
-		rim_balls_root.add_child(rim_ball)
+		_rim_balls_root.add_child(rim_ball)
 		_rim_balls_list.append(rim_ball)
 		rim_ball.global_position = global_position + Vector2(0,_radius - _rim_ball_radius).rotated(2 * PI * i / _rim_ball_count)
 		for a in rim_ball.get_children():
@@ -214,9 +228,11 @@ func _create_rim_balls() -> void:
 			# create joint
 			var stiffness_amount = 0.5 * (_rim_balls_list[i].position - _rim_balls_list[j].position).length() / (_radius - _rim_ball_radius)
 			var joint = _create_joint(_rim_balls_list[i],_rim_balls_list[j], _stiffness_curve.sample(stiffness_amount), _damping_curve.sample(stiffness_amount))
-			rim_balls_root.add_child(joint)
+			_rim_balls_root.add_child(joint)
 			_joints_list.append(joint)
 			_list_resting_dists.append(joint.rest_length)
+
+	_update_visuals()
 
 func _create_joint(a : Node2D, b:Node2D, stiffness : float = 700, damping : float = 0.6) -> DampedSpringJoint2D:
 	var joint = DampedSpringJoint2D.new()
@@ -234,9 +250,7 @@ func _create_joint(a : Node2D, b:Node2D, stiffness : float = 700, damping : floa
 func update_mass() -> void:
 	for ball in _rim_balls_list:
 		ball.mass = (_fish_mass / _rim_ball_count) * _fish_scale
-		
-	
-	
+
 func update_I() -> void:
 	#
 	#  Calculates the moment of inertia of the fish
@@ -248,7 +262,7 @@ func update_I() -> void:
 	
 func update_direction_and_orientation() -> void:
 	_dir = (_rim_balls_list[_reference_ball].position - 
-	_rim_balls_list[(_reference_ball + _rim_ball_count/2) % _rim_ball_count].position).normalized()
+	_rim_balls_list[(_reference_ball + floori(_rim_ball_count/2.)) % _rim_ball_count].position).normalized()
 	_orientation = _dir.angle_to(Vector2(0,1))
 	
 func update_angular_velocity(delta):
@@ -261,23 +275,16 @@ func set_ball_scale(s : float):
 	_fish_scale = s
 	for i in range(_joints_list.size()):
 		_joints_list[i].rest_length = _list_resting_dists[i] * s
-		
 
 func _update_visuals() -> void:
 	var points = []
 	for ball in _rim_balls_list:
 		points.append(ball.position)
-	visual_polygon.polygon = points
-	visual_rim.points = points
+	_visual_polygon.polygon = points
+	_visual_rim.points = points
 	# update arrow
-	arrow.position = _CoM + Vector2.from_angle(-_orientation+PI/2.0) * _fish_scale * (_radius + _rim_ball_radius/2.0)
-	arrow.rotation = -_orientation
-
-# for debugging which nodes are being pushed
-func _draw() -> void:
-	if draw_on:
-		for point in debug_force_points:
-			draw_arc(point, _rim_ball_radius, 0.0, TAU, 24, Color.RED, 3.0)
+	_arrow.position = _CoM + Vector2.from_angle(-_orientation+PI/2.0) * _fish_scale * _radius
+	_arrow.rotation = -_orientation
 
 func update_CoM() -> void:
 	var sum_positions = Vector2.ZERO
@@ -303,8 +310,8 @@ func _handle_turning(delta):
 			else:
 				max_torque_effective  = _max_torque * _fish_scale
 			var torque_needed = sign(diff) * min(abs(diff / (delta)), max_torque_effective)
-			if frame % 10 == 0:
-				print("_L ", _L, " diff ", diff)
+			# if _frame % 10 == 0:
+			# 	print("_L ", _L, " diff ", diff)
 			_apply_torque(torque_needed)
 
 func update_velocity(delta):
@@ -314,15 +321,12 @@ func _handle_scale(delta) -> void:
 	if _explosion_hapenning: return
 	var new_fish_size = clampf(_fish_scale + _scale_speed * _scale_input * delta, _min_fish_scale, _max_fish_scale)
 	if new_fish_size != _fish_scale: set_ball_scale(new_fish_size)
-	
+
 func _apply_mass_changing_drag(delta) -> void:
 	var momentum_added = _fish_mass * (_fish_scale - _previous_fish_scale) * _CoM_velocity
 	for ball in _rim_balls_list:
 		ball.apply_central_force(-momentum_added  / (delta * _drag_correction * _rim_ball_count))
-		
 
-
-		
 func _handle_explosion(delta) -> void:
 	if _exploded and not _explosion_hapenning:
 		print("kaboom")
@@ -337,12 +341,7 @@ func _handle_explosion(delta) -> void:
 	if _is_recovering_from_explosion and _fish_scale <= _max_fish_scale:
 		_is_recovering_from_explosion = false
 		_explosion_hapenning = false
-		
-		
-		
-		
-	
-	
+
 func _handle_flip(delta) -> void:
 	var flipDirection = 0.0
 	if _flipped_left and not _flip_hapenning:
@@ -380,7 +379,6 @@ func _reset_attributes() -> void:
 	_CoM_velocity = 0
 	_angular_velocity = 0
 	set_ball_scale(1)
-	pass
 
 ## Set pufferfish _orientation in degrees. Set arbitrary = true if when called, the fish is in an arbitrary rotation
 func set_orientation(r: float, arbitrary : bool = false) -> void:
@@ -409,9 +407,16 @@ func force_position(pos: Vector2) -> void:
 	for i in range(len(_rim_balls_list)):
 		var rim_ball_position = pos + Vector2(0,_radius - _rim_ball_radius).rotated(2 * PI * i / _rim_ball_count)
 		_rim_balls_list[i].force_position(rim_ball_position) 
-	
-	
 
+#
+# Debug functions
+#
+
+# for debugging which nodes are being pushed
+func _draw() -> void:
+	if _draw_on:
+		for point in _debug_force_points:
+			draw_arc(point, _rim_ball_radius, 0.0, TAU, 24, Color.RED, 3.0)
 
 # var scaleTween : Tween
 # var pushAmount: float = 0.0

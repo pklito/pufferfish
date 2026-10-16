@@ -2,20 +2,62 @@
 
 [ext_resource type="Script" uid="uid://b63vrgwqsx3ny" path="res://scenes/game/map.gd" id="1_fodlk"]
 
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nmknx"]
-normal = Vector2(1, 0)
-
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_k8gfv"]
-normal = Vector2(-1, 0)
-
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_de1aa"]
 normal = Vector2(1, 0)
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_uqaax"]
 normal = Vector2(-1, 0)
 
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nmknx"]
+normal = Vector2(1, 0)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_k8gfv"]
+normal = Vector2(-1, 0)
+
 [node name="Map" type="Node2D" unique_id=323573442]
 script = ExtResource("1_fodlk")
+
+[node name="BallMarker" type="Marker2D" parent="." unique_id=1567638634]
+
+[node name="SpawnPoints" type="Node2D" parent="." unique_id=158163456]
+
+[node name="Marker2D" type="Marker2D" parent="SpawnPoints" unique_id=1326152156]
+position = Vector2(-300, 0)
+rotation = 1.5707964
+
+[node name="Marker2D2" type="Marker2D" parent="SpawnPoints" unique_id=29382659]
+position = Vector2(-400, -350)
+rotation = 0.87266463
+
+[node name="Marker2D3" type="Marker2D" parent="SpawnPoints" unique_id=886615524]
+position = Vector2(-400, 350)
+rotation = 2.268928
+
+[node name="Marker2D4" type="Marker2D" parent="SpawnPoints" unique_id=1115086583]
+position = Vector2(-550, -150)
+rotation = 1.2217305
+
+[node name="Marker2D5" type="Marker2D" parent="SpawnPoints" unique_id=1116986741]
+position = Vector2(-550, 150)
+rotation = 1.9198622
+
+[node name="LeftGoal" type="Area2D" parent="." unique_id=441037269]
+position = Vector2(-775, 0)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftGoal" unique_id=992268362]
+shape = SubResource("WorldBoundaryShape2D_de1aa")
+
+[node name="RightGoal" type="Area2D" parent="." unique_id=1003982549]
+position = Vector2(775, 0)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightGoal" unique_id=1793264373]
+shape = SubResource("WorldBoundaryShape2D_uqaax")
 
 [node name="UpperWall" type="StaticBody2D" parent="." unique_id=2054824166]
 collision_mask = 0
@@ -35,8 +77,6 @@ polygon = PackedVector2Array(629.2893, 500, 700, 429.2893, 700, 250, 750, 250, 7
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="LowerWall" unique_id=89121720]
 polygon = PackedVector2Array(629.2893, 500, 700, 429.2893, 700, 250, 750, 250, 750, 550, -750, 550, -750, 250, -700, 250, -700, 429.2893, -629.2893, 500)
 
-[node name="BallMarker" type="Marker2D" parent="." unique_id=1567638634]
-
 [node name="LeftBlocker" type="StaticBody2D" parent="." unique_id=1037600418]
 position = Vector2(-750, 0)
 collision_layer = 4
@@ -50,21 +90,3 @@ collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightBlocker" unique_id=1094179713]
 shape = SubResource("WorldBoundaryShape2D_k8gfv")
-
-[node name="LeftGoal" type="Area2D" parent="." unique_id=441037269]
-position = Vector2(-775, 0)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftGoal" unique_id=992268362]
-shape = SubResource("WorldBoundaryShape2D_de1aa")
-
-[node name="RightGoal" type="Area2D" parent="." unique_id=1003982549]
-position = Vector2(775, 0)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RightGoal" unique_id=1793264373]
-shape = SubResource("WorldBoundaryShape2D_uqaax")
