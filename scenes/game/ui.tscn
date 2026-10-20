@@ -1,0 +1,105 @@
+[gd_scene format=3 uid="uid://dkqaeveoartds"]
+
+[ext_resource type="Script" uid="uid://3rbxwxpi3uyv" path="res://scenes/game/ui.gd" id="1_eq76c"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_8uf7h"]
+font_size = 22
+
+[sub_resource type="LabelSettings" id="LabelSettings_q2qg1"]
+font_size = 42
+font_color = Color(0.26666668, 1, 0.6392157, 1)
+
+[node name="UI" type="Control" unique_id=246025828 node_paths=PackedStringArray("_left_score_label", "_right_score_label", "_game_timer_label", "_round_timer")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_eq76c")
+_left_score_label = NodePath("Top/HBoxContainer/LeftBox/LeftScore")
+_right_score_label = NodePath("Top/HBoxContainer/RightBox/RightScore")
+_game_timer_label = NodePath("Top/HBoxContainer/Timer")
+_round_timer = NodePath("RoundTimer")
+
+[node name="Top" type="ColorRect" parent="." unique_id=866820866]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+color = Color(0, 0, 0, 1)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Top" unique_id=1815207809]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="LeftBox" type="ColorRect" parent="Top/HBoxContainer" unique_id=1306428339]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+color = Color(0.068241455, 0.30605373, 1, 1)
+
+[node name="LeftScore" type="Label" parent="Top/HBoxContainer/LeftBox" unique_id=249758091]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+resize_font_to_fit = true
+
+[node name="Timer" type="Label" parent="Top/HBoxContainer" unique_id=2115284562]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+label_settings = SubResource("LabelSettings_8uf7h")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightBox" type="ColorRect" parent="Top/HBoxContainer" unique_id=127314942]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+color = Color(1, 0, 0, 1)
+
+[node name="RightScore" type="Label" parent="Top/HBoxContainer/RightBox" unique_id=659723290]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+resize_font_to_fit = true
+
+[node name="RoundTimer" type="Label" parent="." unique_id=332751497]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -5.0
+offset_top = -11.5
+offset_right = 5.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+offset_transform_enabled = true
+offset_transform_position = Vector2(0, -80)
+label_settings = SubResource("LabelSettings_q2qg1")
+horizontal_alignment = 1
+vertical_alignment = 1

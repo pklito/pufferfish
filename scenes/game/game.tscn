@@ -2,9 +2,15 @@
 
 [ext_resource type="Script" uid="uid://f22ai8kjfncw" path="res://scenes/game/game.gd" id="1_vasa2"]
 [ext_resource type="PackedScene" uid="uid://xyp8twydab52" path="res://scenes/game/field.tscn" id="2_0sr1o"]
+[ext_resource type="PackedScene" uid="uid://dkqaeveoartds" path="res://scenes/game/ui.tscn" id="3_lfrn8"]
 
 [node name="Game" type="Node" unique_id=434314932]
+process_mode = 1
 script = ExtResource("1_vasa2")
-_enable_overrides = true
 
 [node name="Field" parent="." unique_id=1309572721 instance=ExtResource("2_0sr1o")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1290251542]
+layer = 10
+
+[node name="UI" parent="CanvasLayer" unique_id=246025828 instance=ExtResource("3_lfrn8")]

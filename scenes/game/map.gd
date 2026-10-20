@@ -45,7 +45,8 @@ var _spawn_points_left: Array[Vector3] = []
 var _spawn_points_right: Array[Vector3] = []
 
 func _ready() -> void:
-	# connect signals left_goal.body_entered.connect(_on_left_goal_body_enter)
+	# connect signals
+	left_goal.body_entered.connect(_on_left_goal_body_enter)
 	right_goal.body_entered.connect(_on_right_goal_body_enter)
 
 	# get player spawn points from markers

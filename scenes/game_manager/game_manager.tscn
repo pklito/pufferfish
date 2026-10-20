@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://ch63mggv7g8mn"]
+
+[ext_resource type="Script" uid="uid://d1r2y6qh5k38l" path="res://scenes/game_manager/game_manager.gd" id="1_lycnq"]
+
+[node name="GameManager" type="Node" unique_id=669127110]
+script = ExtResource("1_lycnq")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2075482132]
+layer = 100

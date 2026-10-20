@@ -16,7 +16,7 @@ radius = 35.0
 goal_size = 400.748
 wall_width = 82.51299999999999
 corner_width = 88.405
-corner_angle = 1.2415748699912061
+corner_angle = 1.241574869991206
 
 [node name="Camera" type="Camera2D" parent="." unique_id=1748199894]
-zoom = Vector2(0.6, 0.6)
+zoom = Vector2(0.555, 0.555)
