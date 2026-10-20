@@ -56,6 +56,9 @@ var _is_recovering_from_explosion: bool = false
 @export var small_l = 300 * _fish_mass
 # apply this so that changing mass is not completely momentum conserving
 @export var _drag_correction : float  = 1.0
+# general drag force
+@export var _gamma : float = 1
+@export var _drag_velocity : float 
 
 @export var _flip_time : float = 0.5
 @export var _flip_stop_threshold : float = 0.05
@@ -79,7 +82,9 @@ var _list_resting_dists : Array[float] = []
 # Is this right? Is global position the com of the spawn position
 var _CoM : Vector2 = global_position
 var _previous_CoM : Vector2 = _CoM
-var _CoM_velocity = 0.0
+var _CoM_velocity : Vector2 = Vector2(0.0 ,0.0)
+var position_just_set : bool = false
+
 
 
 var _fish_scale := 1.0
@@ -132,8 +137,9 @@ func _physics_process(delta) -> void:
 	_handle_turning(delta)
 	_handle_flip(delta)
 	_handle_explosion(delta)
-	update_velocity(delta)
+	_update_velocity(delta)
 	_move(delta)
+	_apply_drag()
 	_apply_mass_changing_drag(delta)
 	_previous_CoM = _CoM
 
@@ -249,6 +255,14 @@ func _create_joint(a : Node2D, b:Node2D, stiffness : float = 700, damping : floa
 	joint.damping = damping
 	joint.rest_length = joint.length
 	return joint
+	
+func _force_all_balls(force) -> void:
+	for rim_ball in _rim_balls_list:
+		rim_ball.apply_central_force(force/_rim_ball_count)
+		
+func _apply_drag() -> void:
+	if _CoM_velocity.length() >= _drag_velocity:
+		_force_all_balls(-_gamma * _CoM_velocity)
 
 func update_mass() -> void:
 	for ball in _rim_balls_list:
@@ -296,6 +310,7 @@ func update_CoM() -> void:
 	_CoM = sum_positions/_rim_ball_count
 
 func _apply_torque(tau) -> void: # Remember the more important accuracy is no net center of mass force
+	print("TORQUE APPLIED")
 	var applied_force = tau / ((_rim_balls_list[0].position - _CoM).length())
 	for i in range(_rim_ball_count):
 		_rim_balls_list[i].apply_central_force(applied_force/_rim_ball_count * (_rim_balls_list[i].position - _CoM).normalized().orthogonal())
@@ -317,8 +332,10 @@ func _handle_turning(delta):
 			# 	print("_L ", _L, " diff ", diff)
 			_apply_torque(torque_needed)
 
-func update_velocity(delta):
-	_CoM_velocity = (_CoM - _previous_CoM)/delta
+func _update_velocity(delta):
+	if not position_just_set:
+		_CoM_velocity = (_CoM - _previous_CoM)/delta
+	position_just_set = false
 
 func _handle_scale(delta) -> void:
 	if _explosion_hapenning: return
@@ -340,7 +357,6 @@ func _handle_explosion(delta) -> void:
 		_is_recovering_from_explosion = true
 	if _is_recovering_from_explosion:
 		set_ball_scale(_fish_scale - _scale_speed * delta)
-		print("here")
 	if _is_recovering_from_explosion and _fish_scale <= _max_fish_scale:
 		_is_recovering_from_explosion = false
 		_explosion_hapenning = false
@@ -379,7 +395,7 @@ func _handle_flip(delta) -> void:
 func _reset_attributes() -> void:
 	_I = 0
 	_L = 0
-	_CoM_velocity = 0
+	_CoM_velocity = Vector2(0.0, 0.0)
 	_angular_velocity = 0
 	set_ball_scale(1)
 
@@ -458,3 +474,5 @@ func _draw() -> void:
 #TODO: phyisics optimizations: friction to adjust flip feel (pretty good rn)
 
 #TODO: make movement smoother by amplifying the turning component? Dependent on velocity? Check examples online
+
+#TODO: check why there is some torque applied at the beginning
