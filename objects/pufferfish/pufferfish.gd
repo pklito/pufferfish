@@ -6,6 +6,7 @@ class PlayerSettings:
 	var id: int = 0
 	var team: Game.Team = Game.Team.LEFT
 	var name: String = "Fish"
+	var input_id: Variant
 
 	var body_color_left: Color = Color.BLUE_VIOLET
 	var rim_color_left: Color = Color.BLUE
@@ -24,6 +25,7 @@ var settings: PlayerSettings = PlayerSettings.new()
 @onready var _visual_polygon : Polygon2D = $Body
 @onready var _visual_rim : Line2D = $Rim
 @onready var _arrow : Sprite2D = $Arrow
+@onready var _name_label: Label = $Name
 @onready var _rim_balls_root : Node2D = $RimBallsRoot
 
 
@@ -101,6 +103,10 @@ var _flip_time_remaining : float = 0
 
 var _explosion_hapenning : bool = false
 
+var frozen = false:
+	set(val):
+		frozen = val
+		_name_label.visible = val
 
 # Inputs
 var _acceleration_input: float = 0.0
@@ -200,14 +206,32 @@ func _move(delta):
 		_apply_torque( -_L/(10*delta))
 
 func _get_inputs() -> void:
-	_acceleration_input = Input.get_action_strength("p%d_accelerate" %(settings.id))
-	_turning_input = Input.get_axis("p%d_turn_right" %(settings.id), "p%d_turn_left" %(settings.id))
-	_scale_input = Input.get_axis("p%d_shrink" %(settings.id), "p%d_expand" %(settings.id))
-	_flipped_left = Input.is_action_just_pressed("p%d_flip_left" %(settings.id))
-	_flipped_right = Input.is_action_just_pressed("p%d_flip_right" %(settings.id))
-	_exploded = Input.is_action_just_pressed("p%d_explode" %(settings.id))
+	if frozen:
+		_acceleration_input = 0.0
+		_turning_input = 0.0
+		_scale_input = 0.0
+		_flipped_left = false
+		_flipped_right = false
+		_exploded = false
+	elif settings.input_id is String:
+		_acceleration_input = Input.get_action_strength("%s_accelerate" %(settings.input_id))
+		_turning_input = Input.get_axis("%s_turn_right" %(settings.input_id), "%s_turn_left" %(settings.input_id))
+		_scale_input = Input.get_axis("%s_shrink" %(settings.input_id), "%s_expand" %(settings.input_id))
+		_flipped_left = Input.is_action_just_pressed("%s_flip_left" %(settings.input_id))
+		_flipped_right = Input.is_action_just_pressed("%s_flip_right" %(settings.input_id))
+		_exploded = Input.is_action_just_pressed("%s_explode" %(settings.input_id))
+	elif settings.input_id:
+		# TODO: check if controller is plugged?
+		# TODO: dunno if trigger right axis exists if its a button
+		_acceleration_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_TRIGGER_RIGHT)
+		_turning_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_LEFT_X)
+		_scale_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_RIGHT_Y)
+		_flipped_left = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_LEFT_SHOULDER)
+		_flipped_right = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_RIGHT_SHOULDER)
+		_exploded = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_A)
 
 func _init_visuals_settings() -> void:
+	_name_label.text = settings.name
 	# init visuals from values
 	_visual_rim.width = 2 * _rim_ball_radius
 	if settings.team == Game.Team.LEFT:
@@ -276,12 +300,12 @@ func update_I() -> void:
 	for ball in _rim_balls_list:
 		inertia += ball.mass * (ball.position - _CoM).length()**2
 	_I = inertia
-	
+
 func update_direction_and_orientation() -> void:
 	_dir = (_rim_balls_list[_reference_ball].position - 
 	_rim_balls_list[(_reference_ball + floori(_rim_ball_count/2.)) % _rim_ball_count].position).normalized()
 	_orientation = _dir.angle_to(Vector2(0,1))
-	
+
 func update_angular_velocity(delta):
 	if _rotation_just_set:
 		_rotation_just_set = false
@@ -302,6 +326,8 @@ func _update_visuals() -> void:
 	# update arrow
 	_arrow.position = _CoM + Vector2.from_angle(-_orientation+PI/2.0) * _fish_scale * _radius
 	_arrow.rotation = -_orientation
+	# update name label
+	_name_label.position = Vector2(_CoM.x - (_name_label.size.x / 2.0), _CoM.y - (_radius * _fish_scale + 30 + _name_label.size.y / 2.0))
 
 func update_CoM() -> void:
 	var sum_positions = Vector2.ZERO
@@ -426,6 +452,9 @@ func force_position(pos: Vector2) -> void:
 	for i in range(len(_rim_balls_list)):
 		var rim_ball_position = pos + Vector2(0,_radius - _rim_ball_radius).rotated(2 * PI * i / _rim_ball_count)
 		_rim_balls_list[i].force_position(rim_ball_position) 
+
+func set_name_visibility(val: bool) -> void:
+	_name_label.visible = val
 
 #
 # Debug functions

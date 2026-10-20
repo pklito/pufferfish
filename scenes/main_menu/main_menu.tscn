@@ -1,0 +1,842 @@
+[gd_scene format=3 uid="uid://ddpkp6diit54j"]
+
+[ext_resource type="Script" uid="uid://gj8gbf8qp71t" path="res://scenes/main_menu/main_menu.gd" id="1_fsom3"]
+[ext_resource type="Texture2D" uid="uid://oknc33kocy0k" path="res://assets/ui/flair_arrows_left.svg" id="2_ob46e"]
+[ext_resource type="Script" uid="uid://d0t0hwl1m6oq7" path="res://scenes/main_menu/game_setup.gd" id="2_uqeha"]
+[ext_resource type="Texture2D" uid="uid://beyhfafmves1l" path="res://assets/ui/flair_arrows_right.svg" id="3_uqeha"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ob46e"]
+resource_local_to_scene = true
+content_margin_top = 5.0
+content_margin_bottom = 3.0
+bg_color = Color(0.25859287, 0.25859293, 0.2585928, 1)
+corner_radius_top_left = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_0ebjn"]
+font_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0ebjn"]
+content_margin_top = 5.0
+content_margin_bottom = 3.0
+bg_color = Color(0.18347374, 0.1834738, 0.18347362, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+expand_margin_top = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uqeha"]
+bg_color = Color(0.13144493, 0.13144493, 0.13144484, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wem23"]
+bg_color = Color(0.25859287, 0.25859293, 0.2585928, 1)
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+
+[node name="MainMenu" type="MarginContainer" unique_id=1680395790]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+script = ExtResource("1_fsom3")
+
+[node name="TitleScreen" type="Control" parent="." unique_id=1698613880]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TitleScreen" unique_id=251322011]
+layout_mode = 0
+offset_right = 1072.0
+offset_bottom = 568.0
+theme_override_constants/separation = 13
+alignment = 1
+
+[node name="Title" type="Label" parent="TitleScreen/VBoxContainer" unique_id=1906786471]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Pufferfish Ball"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Play" type="Button" parent="TitleScreen/VBoxContainer" unique_id=920279663]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Play"
+
+[node name="Exit" type="Button" parent="TitleScreen/VBoxContainer" unique_id=667864136]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Exit"
+
+[node name="GameSetup" type="Control" parent="." unique_id=188254335]
+visible = false
+layout_mode = 2
+script = ExtResource("2_uqeha")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup" unique_id=931484008]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="GameSetup/VBoxContainer" unique_id=319170438]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Select a Side"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="GameSetup/VBoxContainer" unique_id=399401767]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 4
+columns = 3
+
+[node name="Left0" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=1958003323]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ob46e")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left0" unique_id=374218896]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left0/VBoxContainer" unique_id=925091180]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left0/VBoxContainer/HBoxContainer" unique_id=328598539]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left0/VBoxContainer/HBoxContainer" unique_id=1214998512]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Left0/VBoxContainer" unique_id=279968964]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Center0" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=1168757250]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0ebjn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center0" unique_id=461246655]
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center0/VBoxContainer" unique_id=1692525269]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -44
+alignment = 1
+
+[node name="LeftArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center0/VBoxContainer/HBoxContainer" unique_id=1297495263]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Panel" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer/Center0/VBoxContainer/HBoxContainer" unique_id=1818355868]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uqeha")
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center0/VBoxContainer/HBoxContainer/Panel" unique_id=2018823011]
+custom_maximum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center0/VBoxContainer/HBoxContainer" unique_id=817440649]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Center0/VBoxContainer" unique_id=2034461513]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Press + to join"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Right0" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=242884538]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wem23")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right0" unique_id=171230907]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right0/VBoxContainer" unique_id=71766191]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right0/VBoxContainer/HBoxContainer" unique_id=1476066378]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right0/VBoxContainer/HBoxContainer" unique_id=1588532952]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Right0/VBoxContainer" unique_id=1673862803]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Left1" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=1027314423]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ob46e")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left1" unique_id=335400489]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left1/VBoxContainer" unique_id=1529706465]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left1/VBoxContainer/HBoxContainer" unique_id=338690718]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left1/VBoxContainer/HBoxContainer" unique_id=409616138]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Left1/VBoxContainer" unique_id=1947643663]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Center1" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=2016884490]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0ebjn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center1" unique_id=295020420]
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center1/VBoxContainer" unique_id=1659535286]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -44
+alignment = 1
+
+[node name="LeftArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center1/VBoxContainer/HBoxContainer" unique_id=1887360098]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Panel" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer/Center1/VBoxContainer/HBoxContainer" unique_id=1225488877]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uqeha")
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center1/VBoxContainer/HBoxContainer/Panel" unique_id=162918965]
+custom_maximum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center1/VBoxContainer/HBoxContainer" unique_id=265689844]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Center1/VBoxContainer" unique_id=214072326]
+visible = false
+layout_mode = 2
+size_flags_vertical = 10
+text = "Press + to join"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Right1" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=387528087]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wem23")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right1" unique_id=1758347828]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right1/VBoxContainer" unique_id=1044761379]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right1/VBoxContainer/HBoxContainer" unique_id=562538961]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right1/VBoxContainer/HBoxContainer" unique_id=1574812730]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Right1/VBoxContainer" unique_id=1996996369]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Left2" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=1826628912]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ob46e")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left2" unique_id=1937317728]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left2/VBoxContainer" unique_id=1650069682]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left2/VBoxContainer/HBoxContainer" unique_id=42613058]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left2/VBoxContainer/HBoxContainer" unique_id=1360092752]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Left2/VBoxContainer" unique_id=2056732321]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Center2" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=125469775]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0ebjn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center2" unique_id=1584843749]
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center2/VBoxContainer" unique_id=260738244]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -44
+alignment = 1
+
+[node name="LeftArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center2/VBoxContainer/HBoxContainer" unique_id=617949949]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Panel" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer/Center2/VBoxContainer/HBoxContainer" unique_id=939586859]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uqeha")
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center2/VBoxContainer/HBoxContainer/Panel" unique_id=883331521]
+custom_maximum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center2/VBoxContainer/HBoxContainer" unique_id=930399050]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Center2/VBoxContainer" unique_id=1450404456]
+visible = false
+layout_mode = 2
+size_flags_vertical = 10
+text = "Press + to join"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Right2" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=175676319]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wem23")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right2" unique_id=78223198]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right2/VBoxContainer" unique_id=1664467644]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right2/VBoxContainer/HBoxContainer" unique_id=1271665291]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right2/VBoxContainer/HBoxContainer" unique_id=755166521]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Right2/VBoxContainer" unique_id=106203811]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Left3" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=1628820042]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ob46e")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left3" unique_id=468730002]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left3/VBoxContainer" unique_id=980991270]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left3/VBoxContainer/HBoxContainer" unique_id=1095211333]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left3/VBoxContainer/HBoxContainer" unique_id=847074945]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Left3/VBoxContainer" unique_id=526698627]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Center3" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=353319088]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0ebjn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center3" unique_id=1967327329]
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center3/VBoxContainer" unique_id=1751510312]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -44
+alignment = 1
+
+[node name="LeftArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center3/VBoxContainer/HBoxContainer" unique_id=1444868395]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Panel" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer/Center3/VBoxContainer/HBoxContainer" unique_id=704745622]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uqeha")
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center3/VBoxContainer/HBoxContainer/Panel" unique_id=806350727]
+custom_maximum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center3/VBoxContainer/HBoxContainer" unique_id=1878989694]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Center3/VBoxContainer" unique_id=1510161879]
+visible = false
+layout_mode = 2
+size_flags_vertical = 10
+text = "Press + to join"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Right3" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=873180113]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wem23")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right3" unique_id=1407938936]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right3/VBoxContainer" unique_id=363453618]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right3/VBoxContainer/HBoxContainer" unique_id=1369490967]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right3/VBoxContainer/HBoxContainer" unique_id=1688000134]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Right3/VBoxContainer" unique_id=1993433519]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Left4" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=46268625]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ob46e")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left4" unique_id=401404558]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left4/VBoxContainer" unique_id=1709244116]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left4/VBoxContainer/HBoxContainer" unique_id=1582537766]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left4/VBoxContainer/HBoxContainer" unique_id=1140070349]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Left4/VBoxContainer" unique_id=1299650764]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Center4" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=1750851004]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0ebjn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center4" unique_id=333921235]
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center4/VBoxContainer" unique_id=1625380026]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -44
+alignment = 1
+
+[node name="LeftArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center4/VBoxContainer/HBoxContainer" unique_id=1430523781]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Panel" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer/Center4/VBoxContainer/HBoxContainer" unique_id=1282176886]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uqeha")
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center4/VBoxContainer/HBoxContainer/Panel" unique_id=774893965]
+custom_maximum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center4/VBoxContainer/HBoxContainer" unique_id=1572985251]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Center4/VBoxContainer" unique_id=934792233]
+visible = false
+layout_mode = 2
+size_flags_vertical = 10
+text = "Press + to join"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Right4" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=1510870394]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wem23")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right4" unique_id=1192602531]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right4/VBoxContainer" unique_id=117763115]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right4/VBoxContainer/HBoxContainer" unique_id=919726804]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right4/VBoxContainer/HBoxContainer" unique_id=594932110]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Right4/VBoxContainer" unique_id=2113427965]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Left5" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=1050597895]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ob46e")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left5" unique_id=1178222579]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Left5/VBoxContainer" unique_id=945972532]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left5/VBoxContainer/HBoxContainer" unique_id=1415742099]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Left5/VBoxContainer/HBoxContainer" unique_id=1193928286]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Left5/VBoxContainer" unique_id=1532404191]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Center5" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=2036268898]
+custom_minimum_size = Vector2(140, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0ebjn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center5" unique_id=1898698641]
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Center5/VBoxContainer" unique_id=142944579]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -44
+alignment = 1
+
+[node name="LeftArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center5/VBoxContainer/HBoxContainer" unique_id=757370907]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Panel" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer/Center5/VBoxContainer/HBoxContainer" unique_id=760218260]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uqeha")
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center5/VBoxContainer/HBoxContainer/Panel" unique_id=1667950078]
+custom_maximum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Center5/VBoxContainer/HBoxContainer" unique_id=989723290]
+visible = false
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+texture = ExtResource("3_uqeha")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Center5/VBoxContainer" unique_id=155160342]
+visible = false
+layout_mode = 2
+size_flags_vertical = 10
+text = "Press + to join"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Right5" type="PanelContainer" parent="GameSetup/VBoxContainer/GridContainer" unique_id=2042105373]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wem23")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right5" unique_id=1696347653]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameSetup/VBoxContainer/GridContainer/Right5/VBoxContainer" unique_id=630978541]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = -40
+alignment = 1
+
+[node name="RightArrow" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right5/VBoxContainer/HBoxContainer" unique_id=435317777]
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("2_ob46e")
+stretch_mode = 3
+
+[node name="Controller" type="TextureRect" parent="GameSetup/VBoxContainer/GridContainer/Right5/VBoxContainer/HBoxContainer" unique_id=1535599939]
+custom_minimum_size = Vector2(40, 0)
+custom_maximum_size = Vector2(-1, 40)
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Label" type="Label" parent="GameSetup/VBoxContainer/GridContainer/Right5/VBoxContainer" unique_id=1448796057]
+layout_mode = 2
+size_flags_vertical = 10
+text = "Player 1"
+label_settings = SubResource("LabelSettings_0ebjn")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Start" type="Button" parent="GameSetup/VBoxContainer" unique_id=894147152]
+custom_minimum_size = Vector2(80, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+disabled = true
+text = "Start"
+
+[connection signal="pressed" from="TitleScreen/VBoxContainer/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="TitleScreen/VBoxContainer/Exit" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="GameSetup/VBoxContainer/Start" to="GameSetup" method="_on_start_pressed"]

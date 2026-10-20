@@ -13,6 +13,9 @@ _limits = [0.0, 2.0, 0.0, 1.0]
 _data = [Vector2(0, 1.17), 0.0, 0.0, 0, 0, Vector2(1, 1.213), 0.0, 0.0, 0, 0]
 point_count = 2
 
+[sub_resource type="LabelSettings" id="LabelSettings_kelw5"]
+font_size = 32
+
 [node name="Pufferfish" type="Node2D" unique_id=544173220]
 script = ExtResource("1_i3yhx")
 _rim_ball_count = 40
@@ -42,3 +45,21 @@ texture = ExtResource("2_8uf7h")
 offset = Vector2(0, 24)
 
 [node name="RimBallsRoot" type="Node2D" parent="." unique_id=1563577509]
+
+[node name="Name" type="Label" parent="." unique_id=1774334995]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -15.5
+offset_top = -23.0
+offset_right = 15.5
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset_ratio = Vector2(0.5, 1)
+size_flags_horizontal = 4
+text = "Fish"
+label_settings = SubResource("LabelSettings_kelw5")
+horizontal_alignment = 1
+vertical_alignment = 1
