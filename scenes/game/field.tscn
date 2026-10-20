@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cftfco5mpu4xe" path="res://scenes/game/field.gd" id="1_k8gfv"]
 [ext_resource type="PackedScene" uid="uid://dswtwramqdnot" path="res://objects/ball.tscn" id="2_2owe7"]
-[ext_resource type="PackedScene" uid="uid://s7ce8m61slqg" path="res://scenes/game/map.tscn" id="4_nmknx"]
+[ext_resource type="PackedScene" uid="uid://s7ce8m61slqg" path="res://scenes/maps/map.tscn" id="4_nmknx"]
 
 [node name="Field" type="Node2D" unique_id=1309572721]
 script = ExtResource("1_k8gfv")
