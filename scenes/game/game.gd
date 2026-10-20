@@ -47,5 +47,3 @@ func _apply_editor_overrides() -> void:
 		else: p.team = Game.Team.RIGHT
 		temp -= 1
 		settings.players_settings.append(p)
-
-

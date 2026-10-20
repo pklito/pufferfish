@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bd5kgilapls7u" path="res://objects/pufferfish/soft_body_node.gd" id="1_txput"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0mix2"]
-friction = 0.2
+friction = 0.7
 
 [sub_resource type="SphereMesh" id="SphereMesh_dqbel"]
 radius = 50.0

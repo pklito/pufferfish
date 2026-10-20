@@ -6,5 +6,7 @@
 [node name="Game" type="Node" unique_id=434314932]
 script = ExtResource("1_vasa2")
 _enable_overrides = true
+player_count = 4
+left_team_count = 2
 
 [node name="Field" parent="." unique_id=1309572721 instance=ExtResource("2_0sr1o")]

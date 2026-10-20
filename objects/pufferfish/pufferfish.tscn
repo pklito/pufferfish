@@ -13,12 +13,8 @@ _limits = [0.0, 2.0, 0.0, 1.0]
 _data = [Vector2(0, 1.17), 0.0, 0.0, 0, 0, Vector2(1, 1.213), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[node name="Pufferfish" type="Node2D" unique_id=544173220 node_paths=PackedStringArray("visual_polygon", "visual_rim", "arrow", "rim_balls_root")]
+[node name="Pufferfish" type="Node2D" unique_id=544173220]
 script = ExtResource("1_i3yhx")
-visual_polygon = NodePath("Body")
-visual_rim = NodePath("Rim")
-arrow = NodePath("Arrow")
-rim_balls_root = NodePath("RimBallsRoot")
 _rim_ball_count = 40
 _stiffness_curve = SubResource("Curve_k8gfv")
 _damping_curve = SubResource("Curve_de1aa")

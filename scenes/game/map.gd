@@ -45,7 +45,8 @@ var _spawn_points_left: Array[Vector3] = []
 var _spawn_points_right: Array[Vector3] = []
 
 func _ready() -> void:
-	# connect signals left_goal.body_entered.connect(_on_left_goal_body_enter)
+	# connect signals 
+	left_goal.body_entered.connect(_on_left_goal_body_enter)
 	right_goal.body_entered.connect(_on_right_goal_body_enter)
 
 	# get player spawn points from markers
@@ -113,4 +114,3 @@ func get_ball_starting_position() -> Vector2:
 func get_player_starting_positions(team: Game.Team) -> Array[Vector3]:
 	if team == Game.Team.LEFT: return _spawn_points_left
 	else: return _spawn_points_right
-

@@ -10,13 +10,15 @@ script = ExtResource("1_k8gfv")
 [node name="Players" type="Node2D" parent="." unique_id=1533824013]
 
 [node name="Ball" parent="." unique_id=1322935782 instance=ExtResource("2_2owe7")]
-radius = 35.0
+radius = 25.0
 
 [node name="Map" parent="." unique_id=323573442 instance=ExtResource("4_nmknx")]
-goal_size = 400.748
+width = 2628.046
+height = 1315.7959999999998
+goal_size = 444.608
 wall_width = 82.51299999999999
 corner_width = 88.405
-corner_angle = 1.2415748699912061
+corner_angle = 1.241574869991206
 
 [node name="Camera" type="Camera2D" parent="." unique_id=1748199894]
-zoom = Vector2(0.6, 0.6)
+zoom = Vector2(0.4, 0.4)

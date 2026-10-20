@@ -8,8 +8,20 @@ normal = Vector2(1, 0)
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_uqaax"]
 normal = Vector2(-1, 0)
 
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3psx7"]
+friction = 0.1
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_txput"]
+friction = 0.1
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_027qd"]
+friction = 0.1
+
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nmknx"]
 normal = Vector2(1, 0)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_d70lf"]
+friction = 0.1
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_k8gfv"]
 normal = Vector2(-1, 0)
@@ -61,6 +73,7 @@ shape = SubResource("WorldBoundaryShape2D_uqaax")
 
 [node name="UpperWall" type="StaticBody2D" parent="." unique_id=2054824166]
 collision_mask = 0
+physics_material_override = SubResource("PhysicsMaterial_3psx7")
 
 [node name="Polygon2D" type="Polygon2D" parent="UpperWall" unique_id=1693255470]
 polygon = PackedVector2Array(629.2893, -500, 700, -429.2893, 700, -250, 750, -250, 750, -550, -750, -550, -750, -250, -700, -250, -700, -429.2893, -629.2893, -500)
@@ -70,6 +83,7 @@ polygon = PackedVector2Array(629.2893, -500, 700, -429.2893, 700, -250, 750, -25
 
 [node name="LowerWall" type="StaticBody2D" parent="." unique_id=1941056463]
 collision_mask = 0
+physics_material_override = SubResource("PhysicsMaterial_txput")
 
 [node name="Polygon2D" type="Polygon2D" parent="LowerWall" unique_id=620415739]
 polygon = PackedVector2Array(629.2893, 500, 700, 429.2893, 700, 250, 750, 250, 750, 550, -750, 550, -750, 250, -700, 250, -700, 429.2893, -629.2893, 500)
@@ -80,6 +94,7 @@ polygon = PackedVector2Array(629.2893, 500, 700, 429.2893, 700, 250, 750, 250, 7
 [node name="LeftBlocker" type="StaticBody2D" parent="." unique_id=1037600418]
 position = Vector2(-750, 0)
 collision_layer = 4
+physics_material_override = SubResource("PhysicsMaterial_027qd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LeftBlocker" unique_id=1259533272]
 shape = SubResource("WorldBoundaryShape2D_nmknx")
@@ -87,6 +102,7 @@ shape = SubResource("WorldBoundaryShape2D_nmknx")
 [node name="RightBlocker" type="StaticBody2D" parent="." unique_id=89855510]
 position = Vector2(750, 0)
 collision_layer = 4
+physics_material_override = SubResource("PhysicsMaterial_d70lf")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightBlocker" unique_id=1094179713]
 shape = SubResource("WorldBoundaryShape2D_k8gfv")

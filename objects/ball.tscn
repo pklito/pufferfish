@@ -4,7 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://duf0p6u78eymk" path="res://assets/ball.png" id="2_n16w4"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_lp2uy"]
-rough = true
 bounce = 0.6
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ball"]

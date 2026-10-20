@@ -62,6 +62,7 @@ var _is_recovering_from_explosion: bool = false
 
 @export var _max_angular_momentum = 100000
 @export var _max_torque = _max_angular_momentum/0.1
+@export var _turning_strength : float = 1.5
 var _roll_diff_threshold = 3000
 
 var _reference_ball : int = 0
@@ -138,6 +139,8 @@ func _physics_process(delta) -> void:
 
 	_update_visuals()
 
+
+
 func _move(delta):
 	# DEALING WITH MOVEMENT
 	var forced_points_count = 4
@@ -150,7 +153,7 @@ func _move(delta):
 	var force_per_rimball = _movement_force * _acceleration_input * _dir / (forced_points_count + 1)
 	var force_velocity_dotted = force_per_rimball.normalized().dot(_CoM_velocity.normalized())
 	if force_velocity_dotted < 0:
-		force_per_rimball += force_per_rimball * abs(force_velocity_dotted)
+		force_per_rimball += _turning_strength*(force_per_rimball * abs(force_velocity_dotted))
 		
 	var forward_squish_force = _squish_force * _acceleration_input * _dir / (forced_points_count + 1)
 	var backward_squish_force = -_squish_force * _acceleration_input * _dir / (_rim_ball_count - forced_points_count - 1)
@@ -301,7 +304,7 @@ func _handle_turning(delta):
 	# if you are slower than the intended angular velocity or moving in the opposite direction
 	# also _I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
 	# velocity it naturally gets bigger so _I am compensating)
-	if sign(_turning_input) * _L < _max_angular_momentum * _fish_scale and not _flip_hapenning: 
+	if sign(_turning_input) * _L < _max_angular_momentum * _fish_scale**2 and not _flip_hapenning: 
 		var diff = _turning_input * _max_angular_momentum * _fish_scale - _L # angular momentum needed to reach goal
 		var max_torque_effective
 		if abs(diff) > _roll_diff_threshold:
