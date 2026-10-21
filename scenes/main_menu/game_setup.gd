@@ -66,6 +66,11 @@ func _input(event: InputEvent) -> void:
 			_player_join("k1")
 		if "k2" not in _input_ids and event.is_action_pressed("k2_explode"):
 			_player_join("k2")
+
+		# dont do input if currently editing text
+		for i in range(NUM_ROWS):
+			if _get_grid_panel(i, 1).find_child("LineEdit").is_editing(): return
+
 		if "k1" in _input_ids:
 			if event.is_action_pressed("k1_turn_left"): _on_input_left("k1")
 			elif event.is_action_pressed("k1_turn_right"): _on_input_right("k1")
@@ -219,3 +224,4 @@ func _on_input_back(device) -> void:
 
 func _on_joy_connection_changed(device: int, connected: bool) -> void:
 	if not connected and device in _input_ids: _player_leave(device)
+
