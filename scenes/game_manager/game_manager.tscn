@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://wmqllq3qg2ls" path="res://scenes/game/game.tscn" id="2_kc0kb"]
 
 [node name="GameManager" type="Node" unique_id=669127110]
+process_mode = 3
 script = ExtResource("1_lycnq")
 
 [node name="Game" parent="." unique_id=434314932 instance=ExtResource("2_kc0kb")]

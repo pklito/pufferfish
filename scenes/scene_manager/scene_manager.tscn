@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://ddpkp6diit54j" path="res://scenes/main_menu/main_menu.tscn" id="2_hclo4"]
 
 [node name="SceneManager" type="Node" unique_id=1477186095]
+process_mode = 3
 script = ExtResource("1_do3pq")
 
 [node name="MainMenu" parent="." unique_id=1509682357 instance=ExtResource("2_hclo4")]

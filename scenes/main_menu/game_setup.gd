@@ -82,7 +82,8 @@ func _next_available_slot() -> int:
 
 ## returns row of device
 func _dev_to_row(device) -> int:
-	for i in range(NUM_ROWS): if _input_ids[i] == device: return i
+	for i in range(NUM_ROWS):
+		if typeof(_input_ids[i]) == typeof(device) and _input_ids[i] == device: return i
 	return -1
 
 ## reset row r to be vacant

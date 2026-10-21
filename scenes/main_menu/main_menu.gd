@@ -23,4 +23,3 @@ func _connect_signals() -> void:
 
 func _on_game_setup_start(game_settings: Game.GameSettings) -> void:
 	game_started.emit(game_settings)
-

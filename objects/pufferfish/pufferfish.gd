@@ -222,13 +222,13 @@ func _get_inputs() -> void:
 		_flipped_left = Input.is_action_just_pressed("%s_flip_left" %(settings.input_id))
 		_flipped_right = Input.is_action_just_pressed("%s_flip_right" %(settings.input_id))
 		_exploded = Input.is_action_just_pressed("%s_explode" %(settings.input_id))
-	elif settings.input_id:
+	elif settings.input_id is int:
 		# TODO: check if controller is plugged?
 		# TODO: dunno if trigger right axis exists if its a button
 		# TODO: maybe do this with actions somehow
 		_acceleration_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_TRIGGER_RIGHT)
-		_turning_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_LEFT_X)
-		_scale_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_RIGHT_Y)
+		_turning_input = -Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_LEFT_X)
+		_scale_input = -Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_RIGHT_Y)
 
 		var flipping_left = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_LEFT_SHOULDER)
 		_flipped_left = flipping_left and not _flipped_left_last_frame
@@ -348,7 +348,7 @@ func update_CoM() -> void:
 	_CoM = sum_positions/_rim_ball_count
 
 func _apply_torque(tau) -> void: # Remember the more important accuracy is no net center of mass force
-	print("TORQUE APPLIED")
+	#print("TORQUE APPLIED")
 	var applied_force = tau / ((_rim_balls_list[0].position - _CoM).length())
 	for i in range(_rim_ball_count):
 		_rim_balls_list[i].apply_central_force(applied_force/_rim_ball_count * (_rim_balls_list[i].position - _CoM).normalized().orthogonal())
@@ -387,7 +387,7 @@ func _apply_mass_changing_drag(delta) -> void:
 
 func _handle_explosion(delta) -> void:
 	if _exploded and not _explosion_hapenning:
-		print("kaboom")
+		#print("kaboom")
 		_explosion_hapenning = true
 	if _explosion_hapenning and not _is_recovering_from_explosion:
 		set_ball_scale(clamp(_fish_scale + _explosion_rate * delta, 0, _max_fish_scale + _explosion_max_scale_addition))
