@@ -7,7 +7,6 @@
 [node name="Game" type="Node" unique_id=434314932]
 process_mode = 1
 script = ExtResource("1_vasa2")
-_enable_overrides = true
 
 [node name="Field" parent="." unique_id=1309572721 instance=ExtResource("2_0sr1o")]
 

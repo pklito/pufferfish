@@ -88,7 +88,6 @@ var _CoM_velocity : Vector2 = Vector2(0.0 ,0.0)
 var position_just_set : bool = false
 
 
-
 var _fish_scale := 1.0
 var _previous_fish_scale = _fish_scale
 var _max_fish_scale := 1.3
@@ -112,8 +111,11 @@ var frozen = false:
 var _acceleration_input: float = 0.0
 var _turning_input: float = 0.0
 var _scale_input: float = 0.0
+var _flipped_left_last_frame := false
 var _flipped_left: bool = false
+var _flipped_right_last_frame := false
 var _flipped_right: bool = false
+var _exploded_last_frame := false
 var _exploded: bool = false
 
 
@@ -223,12 +225,22 @@ func _get_inputs() -> void:
 	elif settings.input_id:
 		# TODO: check if controller is plugged?
 		# TODO: dunno if trigger right axis exists if its a button
+		# TODO: maybe do this with actions somehow
 		_acceleration_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_TRIGGER_RIGHT)
 		_turning_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_LEFT_X)
 		_scale_input = Input.get_joy_axis(settings.input_id, JoyAxis.JOY_AXIS_RIGHT_Y)
-		_flipped_left = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_LEFT_SHOULDER)
-		_flipped_right = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_RIGHT_SHOULDER)
-		_exploded = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_A)
+
+		var flipping_left = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_LEFT_SHOULDER)
+		_flipped_left = flipping_left and not _flipped_left_last_frame
+		_flipped_left_last_frame = flipping_left
+
+		var flipping_right = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_RIGHT_SHOULDER)
+		_flipped_right = flipping_right and not _flipped_right_last_frame
+		_flipped_right_last_frame = flipping_right
+
+		var exploding = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_A)
+		_exploded = exploding and not _exploded_last_frame
+		_exploded_last_frame = exploding
 
 func _init_visuals_settings() -> void:
 	_name_label.text = settings.name

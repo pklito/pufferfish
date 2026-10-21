@@ -1,9 +1,15 @@
 [gd_scene format=3 uid="uid://ch63mggv7g8mn"]
 
 [ext_resource type="Script" uid="uid://d1r2y6qh5k38l" path="res://scenes/game_manager/game_manager.gd" id="1_lycnq"]
+[ext_resource type="PackedScene" uid="uid://brqfvxmvttppd" path="res://scenes/game_manager/pause_menu.tscn" id="2_0drbn"]
+[ext_resource type="PackedScene" uid="uid://wmqllq3qg2ls" path="res://scenes/game/game.tscn" id="2_kc0kb"]
 
 [node name="GameManager" type="Node" unique_id=669127110]
 script = ExtResource("1_lycnq")
 
+[node name="Game" parent="." unique_id=434314932 instance=ExtResource("2_kc0kb")]
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2075482132]
 layer = 100
+
+[node name="PauseMenu" parent="CanvasLayer" unique_id=377275195 instance=ExtResource("2_0drbn")]
