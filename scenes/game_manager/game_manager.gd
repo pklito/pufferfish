@@ -36,4 +36,3 @@ func _exit_game() -> void:
 	get_tree().quit()
 
 # TODO: check for controller disconnect and pause
-
