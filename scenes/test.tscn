@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://0b4r7gkufhjq"]
+
+[ext_resource type="PackedScene" uid="uid://xnar8xyij2tq" path="res://objects/pufferfish/pufferfish.tscn" id="1_errlg"]
+[ext_resource type="PackedScene" uid="uid://dswtwramqdnot" path="res://objects/ball.tscn" id="2_ball"]
+
+[node name="Test" type="Node2D" unique_id=179266838]
+
+[node name="Pufferfish" parent="." unique_id=595545617 instance=ExtResource("1_errlg")]
+
+[node name="Ball" parent="." unique_id=414871192 instance=ExtResource("2_ball")]
+position = Vector2(40, 0)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1146863398]

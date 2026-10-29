@@ -505,3 +505,7 @@ func _draw() -> void:
 #TODO: make movement smoother by amplifying the turning component? Dependent on velocity? Check examples online
 
 #TODO: check why there is some torque applied at the beginning
+
+#TODO: have two layers. Check if the soccer ball past one of them (by checking where the points are) and apply a force to the ball
+# such that it is an impulse that is like an elastic collision. If it is beyond that you disable collision and send the ball out.
+# test in the test scene.

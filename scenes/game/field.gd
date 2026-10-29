@@ -102,4 +102,3 @@ func _on_right_goal_scored() -> void:
 func _add_existing_players() -> void:
 	for p in _players_root.get_children():
 		_players.append(p)
-
