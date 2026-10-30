@@ -65,7 +65,7 @@ var _is_recovering_from_explosion: bool = false
 @export var _flip_time : float = 0.5
 @export var _flip_stop_threshold : float = 0.05
 
-@export var _max_angular_momentum = 100000
+@export var _max_angular_momentum : float = 100000
 @export var _max_torque = _max_angular_momentum/0.1
 @export var _turning_strength : float = 1.5
 var _roll_diff_threshold = 3000
@@ -126,9 +126,12 @@ func _ready() -> void:
 func _physics_process(delta) -> void:
 	_frame += 1
 	#
-	# if _frame % 10 == 0:
+	# 
 	# 	print("_L ", _L)
 	#
+	if _frame % 10 == 0:
+		print("Turning input ", _turning_input)
+		
 	
 	_get_inputs()
 	_previous_fish_scale = _fish_scale
@@ -357,8 +360,13 @@ func _handle_turning(delta):
 	# if you are slower than the intended angular velocity or moving in the opposite direction
 	# also _I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
 	# velocity it naturally gets bigger so _I am compensating)
-	if sign(_turning_input) * _L < _max_angular_momentum * _fish_scale**2 and not _flip_hapenning: 
-		var diff = _turning_input * _max_angular_momentum * _fish_scale - _L # angular momentum needed to reach goal
+	
+	var target_L = _turning_input * _max_angular_momentum * _fish_scale**2
+	#var dont_turn = abs(_L) > _max_angular_momentum and sign(_L) == sign(target_L) and _turning_input > full_turn
+	if not _flip_hapenning: 
+		if settings.id == 0 and _frame % 10 == 0:
+			print("target_L ", target_L)
+		var diff = target_L - _L # angular momentum needed to reach goal
 		var max_torque_effective
 		if abs(diff) > _roll_diff_threshold:
 			if sign(_L) != _turning_input:
@@ -521,3 +529,6 @@ func _draw() -> void:
 #TODO: have two layers. Check if the soccer ball past one of them (by checking where the points are) and apply a force to the ball
 # such that it is an impulse that is like an elastic collision. If it is beyond that you disable collision and send the ball out.
 # test in the test scene.
+
+#TODO: adjust forces while flipping and growing (maybe also apply forces to adjust angular velocity instead of angular momentum
+# Deadzone, slower turns while
