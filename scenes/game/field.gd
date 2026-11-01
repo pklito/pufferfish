@@ -63,6 +63,7 @@ func set_kickoff() -> void:
 			r += 1
 		p.force_position(Vector2(pos.x, pos.y))
 		p.set_orientation(rad_to_deg(pos.z))
+		p.ball = _ball
 
 func init_players(players_settings: Array[Pufferfish.PlayerSettings]) -> void:
 	for p_settings in players_settings:

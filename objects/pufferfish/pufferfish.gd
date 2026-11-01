@@ -1,12 +1,16 @@
 class_name Pufferfish extends Node2D
 
 const RIM_BALL_SCENE : PackedScene = preload("res://objects/pufferfish/SoftBodyNode.tscn")
+var ball: Ball 
 
 class PlayerSettings:
 	var id: int = 0
 	var team: Game.Team = Game.Team.LEFT
 	var name: String = "Fish"
 	var input_id: Variant
+	
+	var contorller_left_deadzone = 0.15
+	var contorller_right_deadzone = 0.15
 
 	var body_color_left: Color = Color.BLUE_VIOLET
 	var rim_color_left: Color = Color.BLUE
@@ -61,7 +65,7 @@ var _is_recovering_from_explosion: bool = false
 # general drag force
 @export var _gamma : float = 1
 @export var _drag_velocity : float 
-
+@export_range(2, 2.6) var _turn_speed_correction : float
 @export var _flip_time : float = 0.5
 @export var _flip_stop_threshold : float = 0.05
 
@@ -125,12 +129,12 @@ func _ready() -> void:
 
 func _physics_process(delta) -> void:
 	_frame += 1
-	#
+	# 	if _frame % 10 == 0:
+	#	print("Turning input ", _turning_input)
 	# 
 	# 	print("_L ", _L)
 	#
-	if _frame % 10 == 0:
-		print("Turning input ", _turning_input)
+
 		
 	
 	_get_inputs()
@@ -153,6 +157,8 @@ func _physics_process(delta) -> void:
 	_apply_drag()
 	_apply_mass_changing_drag(delta)
 	_previous_CoM = _CoM
+	
+	_apply_failsafe_forces(delta)
 
 	_update_visuals()
 
@@ -160,7 +166,7 @@ func _physics_process(delta) -> void:
 
 func _move(delta):
 	# DEALING WITH MOVEMENT
-	var forced_points_count = 4
+	var forced_points_count = 2
 	var forced_center_index = (_reference_ball + floori(_rim_ball_count/2.0)) % _rim_ball_count
 	var center_rim_ball = _rim_balls_list[wrapi(forced_center_index, 0, _rim_ball_count)]
 	# var oppositeNode = _rim_balls_list[wrapi(forcedCenterIndex + _rim_ball_count/2, 0, _rim_ball_count)]
@@ -244,6 +250,11 @@ func _get_inputs() -> void:
 		var exploding = Input.is_joy_button_pressed(settings.input_id, JoyButton.JOY_BUTTON_A)
 		_exploded = exploding and not _exploded_last_frame
 		_exploded_last_frame = exploding
+		
+	if abs(_turning_input) < settings.contorller_left_deadzone:
+		_turning_input = 0
+	if abs(_scale_input) < settings.contorller_right_deadzone:
+		_scale_input = 0
 
 func _init_visuals_settings() -> void:
 	_name_label.text = settings.name
@@ -255,6 +266,48 @@ func _init_visuals_settings() -> void:
 	else:
 		_visual_polygon.color = settings.body_color_right
 		_visual_rim.default_color = settings.rim_color_right
+
+# When checking if the ball is inside the fish, this is the angle that is relevant
+@export var _fail_safe_detection_angle = 2 * (2*PI/_rim_ball_count)
+@export var _constant_fail_safe_repulsion = 50
+@export var _penetration_fraction = 0
+
+func _apply_failsafe_forces(delta) -> void:
+	# if the ball is nearby
+	if ball == null:
+		return
+	if (ball.position - _CoM).length() < 2 * _radius:
+		var min_angle = PI
+		var min_rim_r = 2 * _radius
+		var ball_r : Vector2 = ball.position - _CoM
+		for rim_ball in _rim_balls_list:
+			var rim_r : Vector2= (rim_ball.position - _CoM)
+			var angle = abs(ball_r.angle_to(rim_r))
+			if angle < min_angle:
+				min_angle = angle
+				min_rim_r = rim_r
+				
+		if ball_r.length() < min_rim_r.length() + _penetration_fraction * _rim_ball_radius:
+			print("inside")
+			set_ball_collisions(false)
+			var normal : Vector2 = ball_r.normalized()
+			var total_force : Vector2 = Vector2(0.0, 0.0)
+			if ball.linear_velocity.dot(normal) < 0:
+				var bounce_force = 2 * abs(ball.linear_velocity.dot(normal)) * ball.mass * normal / delta
+				total_force += bounce_force
+				ball.apply_central_force(bounce_force)
+			var repulsion_force = _constant_fail_safe_repulsion * normal / delta
+			total_force += repulsion_force
+			ball.apply_central_force(repulsion_force)
+			_force_all_balls(-total_force)
+		else:
+			set_ball_collisions(true)
+	else:
+		set_ball_collisions(true)	
+			
+		
+	
+			
 
 func _create_rim_balls() -> void:
 	# create rim balls
@@ -273,12 +326,18 @@ func _create_rim_balls() -> void:
 			# add make rim balls not collide
 			_rim_balls_list[i].add_collision_exception_with(_rim_balls_list[j])
 			_rim_balls_list[j].add_collision_exception_with(_rim_balls_list[i])
-			# create joint
-			var stiffness_amount = 0.5 * (_rim_balls_list[i].position - _rim_balls_list[j].position).length() / (_radius - _rim_ball_radius)
-			var joint = _create_joint(_rim_balls_list[i],_rim_balls_list[j], _stiffness_curve.sample(stiffness_amount), _damping_curve.sample(stiffness_amount))
-			_rim_balls_root.add_child(joint)
-			_joints_list.append(joint)
-			_list_resting_dists.append(joint.rest_length)
+			
+			# create joint if i and j are roughly opposite
+			var distance = wrapi(j - i, 0 , _rim_balls_list.size())
+			var opposite = distance >= _rim_balls_list.size()/2 - 2 and distance <= _rim_balls_list.size()/2 + 2
+			var close = distance <= 2
+			#if close or opposite
+			if true:
+				var stiffness_amount = 0.5 * (_rim_balls_list[i].position - _rim_balls_list[j].position).length() / (_radius - _rim_ball_radius)
+				var joint = _create_joint(_rim_balls_list[i],_rim_balls_list[j], _stiffness_curve.sample(stiffness_amount), _damping_curve.sample(stiffness_amount))
+				_rim_balls_root.add_child(joint)
+				_joints_list.append(joint)
+				_list_resting_dists.append(joint.rest_length)
 
 	_update_visuals()
 
@@ -361,11 +420,9 @@ func _handle_turning(delta):
 	# also _I am making it so that the angular momentum for smaller fish is a bit smaller (in terms of angular 
 	# velocity it naturally gets bigger so _I am compensating)
 	
-	var target_L = _turning_input * _max_angular_momentum * _fish_scale**2
+	var target_L = _turning_input * _max_angular_momentum * _fish_scale**_turn_speed_correction
 	#var dont_turn = abs(_L) > _max_angular_momentum and sign(_L) == sign(target_L) and _turning_input > full_turn
 	if not _flip_hapenning: 
-		if settings.id == 0 and _frame % 10 == 0:
-			print("target_L ", target_L)
 		var diff = target_L - _L # angular momentum needed to reach goal
 		var max_torque_effective
 		if abs(diff) > _roll_diff_threshold:
@@ -439,11 +496,17 @@ func _handle_flip(delta) -> void:
 
 ## Cancel all forces and reset values
 func _reset_attributes() -> void:
+	set_ball_collisions(true)
 	_I = 0
 	_L = 0
 	_CoM_velocity = Vector2(0.0, 0.0)
 	_angular_velocity = 0
 	set_ball_scale(1)
+	
+func set_ball_collisions(enabled: bool) -> void:
+	for rim_ball in _rim_balls_list:
+		rim_ball.set_collision_layer_value(1, enabled)
+		rim_ball.set_collision_mask_value(2, enabled)
 
 ## Set pufferfish _orientation in degrees. Set arbitrary = true if when called, the fish is in an arbitrary rotation
 func set_orientation(r: float, arbitrary : bool = false) -> void:
@@ -530,5 +593,5 @@ func _draw() -> void:
 # such that it is an impulse that is like an elastic collision. If it is beyond that you disable collision and send the ball out.
 # test in the test scene.
 
-#TODO: adjust forces while flipping and growing (maybe also apply forces to adjust angular velocity instead of angular momentum
-# Deadzone, slower turns while
+#TODO: adjust forces while flipping and growing (maybe also apply forces to adjust angular velocity instead of angular momentum)
+# think more about optimization

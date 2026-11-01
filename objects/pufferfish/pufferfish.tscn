@@ -4,13 +4,13 @@
 [ext_resource type="Texture2D" uid="uid://bx36ccystj1wj" path="res://assets/Basic/Double/arrow_s.png" id="2_8uf7h"]
 
 [sub_resource type="Curve" id="Curve_k8gfv"]
-_limits = [0.0, 700.0, 0.0, 1.0]
-_data = [Vector2(0, 700), 0.0, 0.0, 0, 0, Vector2(0.71, 700), 0.0, 0.0, 0, 0, Vector2(1, 456), -12.0, 0.0, 0, 0]
+_limits = [0.0, 1000.0, 0.0, 1.0]
+_data = [Vector2(0, 1000), 0.0, 0.0, 0, 0, Vector2(0.50970876, 1000), 0.0, 0.0, 0, 0, Vector2(1, 1000), -12.0, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="Curve" id="Curve_de1aa"]
 _limits = [0.0, 2.0, 0.0, 1.0]
-_data = [Vector2(0, 1.17), 0.0, 0.0, 0, 0, Vector2(1, 1.213), 0.0, 0.0, 0, 0]
+_data = [Vector2(0.009708732, 1.7078652), 0.0, 0.0, 0, 0, Vector2(1, 1.7303371), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="LabelSettings" id="LabelSettings_kelw5"]
@@ -18,13 +18,15 @@ font_size = 32
 
 [node name="Pufferfish" type="Node2D" unique_id=544173220]
 script = ExtResource("1_i3yhx")
-_rim_ball_count = 40
+_rim_ball_count = 20
+_rim_ball_radius = 12.0
 _stiffness_curve = SubResource("Curve_k8gfv")
 _damping_curve = SubResource("Curve_de1aa")
 _explosion_rate = 15.0
 _explosion_max_scale_addition = 0.4
 _drag_correction = 1.86
-_gamma = 1.6
+_gamma = 1.8
+_turn_speed_correction = 2.282
 
 [node name="Body" type="Polygon2D" parent="." unique_id=648578699]
 z_index = 4

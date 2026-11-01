@@ -3,11 +3,20 @@
 [ext_resource type="PackedScene" uid="uid://xnar8xyij2tq" path="res://objects/pufferfish/pufferfish.tscn" id="1_errlg"]
 [ext_resource type="PackedScene" uid="uid://dswtwramqdnot" path="res://objects/ball.tscn" id="2_ball"]
 
+[sub_resource type="GDScript" id="GDScript_test"]
+script/source = "extends Node2D
+
+func _ready() -> void:
+	$Pufferfish.ball = $Ball
+"
+
 [node name="Test" type="Node2D" unique_id=179266838]
+script = SubResource("GDScript_test")
 
 [node name="Pufferfish" parent="." unique_id=595545617 instance=ExtResource("1_errlg")]
 
 [node name="Ball" parent="." unique_id=414871192 instance=ExtResource("2_ball")]
-position = Vector2(40, 0)
+position = Vector2(10, 0)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1146863398]
+zoom = Vector2(0.2, 0.2)

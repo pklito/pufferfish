@@ -424,6 +424,7 @@ joypads/ignore_joypad_on_unfocused_application=true
 
 [physics]
 
+common/max_physics_steps_per_frame=4
 2d/physics_engine="Rapier2D"
 3d/physics_engine="Jolt Physics"
 2d/default_gravity=0.0

@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://ctifgx4rfn5ma"]
+
+[ext_resource type="PackedScene" uid="uid://xnar8xyij2tq" path="res://objects/pufferfish/pufferfish.tscn" id="1_fish"]
+[ext_resource type="PackedScene" uid="uid://dswtwramqdnot" path="res://objects/ball.tscn" id="2_ball"]
+
+[sub_resource type="GDScript" id="GDScript_test"]
+script/source = "extends Node2D
+
+func _ready() -> void:
+	$Pufferfish.ball = $Ball
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(50, 500)
+
+[node name="Test 2" type="Node2D" unique_id=2041150199]
+script = SubResource("GDScript_test")
+
+[node name="Pufferfish" parent="." unique_id=418864311 instance=ExtResource("1_fish")]
+
+[node name="Ball" parent="." unique_id=1872891039 instance=ExtResource("2_ball")]
+position = Vector2(-2000, 0)
+linear_velocity = Vector2(10000, 0)
+
+[node name="Wall" type="StaticBody2D" parent="." unique_id=655311795]
+position = Vector2(75, 0)
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall" unique_id=1104038779]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="Polygon2D" type="Polygon2D" parent="Wall" unique_id=951223212]
+color = Color(0.6, 0.65, 0.7, 1)
+polygon = PackedVector2Array(-25, -250, 25, -250, 25, 250, -25, 250)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=320065603]
+zoom = Vector2(0.1, 0.1)
